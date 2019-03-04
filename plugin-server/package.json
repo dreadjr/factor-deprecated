@@ -11,6 +11,10 @@
     "lru-cache": "^5.1.1",
     "module-alias": "^2.2.0",
     "serve-favicon": "^2.5.0",
-    "vue": "^2.6.8"
+    "vue": "^2.6.8",
+    "vue-server-renderer": "^2.6.8"
+  },
+  "devDependencies": {
+    "opn": "^5.4.0"
   }
 }

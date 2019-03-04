@@ -11,7 +11,8 @@ module.exports = (transpiled = false) => {
         "@babel/plugin-transform-modules-commonjs",
         "@babel/plugin-syntax-dynamic-import",
         "@babel/plugin-transform-regenerator",
-        "dynamic-import-node"
+        "dynamic-import-node",
+        "@babel/plugin-transform-runtime"
       ],
       presets: [
         [
@@ -20,7 +21,7 @@ module.exports = (transpiled = false) => {
             targets: {
               browsers: ["ie >= 9", "> 1%", "last 2 versions"]
             },
-            useBuiltIns: "usage",
+
             modules: "cjs" // the default value is auto
           }
         ]
