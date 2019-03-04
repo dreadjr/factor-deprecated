@@ -20,6 +20,20 @@ export default Vue => {
       })
     }
 
+    uniqueHash(obj) {
+      let str = typeof obj !== "string" ? obj.toString() : obj
+
+      str = str.substring(0, 500)
+
+      return str
+        .split("")
+        .reduce(
+          (prevHash, currVal) =>
+            ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
+          0
+        )
+    }
+
     // Apply filters a maximum of one time, once they've run add to _applied property
     // If that is set just return it
     applyFilters(name, data) {
@@ -64,7 +78,7 @@ export default Vue => {
       // create unique ID
       // In certain situations (HMR, dev), the same filter can be added twice
       // Using objects and a hash identifier solves that
-      const id = "id" + Vue.$utils.hashId(callback)
+      const id = "id" + this.uniqueHash(callback)
 
       context = context || this
 

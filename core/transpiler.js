@@ -27,6 +27,4 @@ module.exports = (transpiled = false) => {
       ]
     })
   }
-
-  require(`./init`)
 }
