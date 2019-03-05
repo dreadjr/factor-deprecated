@@ -1,4 +1,4 @@
-export default Vue => {
+module.exports = (Vue, { config }) => {
   return new class {
     constructor() {
       this._filters = {}

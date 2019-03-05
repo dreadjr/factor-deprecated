@@ -1,7 +1,7 @@
 {
   "name": "@factor/plugin-server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "plugin.js",
   "license": "GPL-3.0",
   "dependencies": {
     "consola": "^2.5.6",

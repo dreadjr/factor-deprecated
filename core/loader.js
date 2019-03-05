@@ -1,14 +1,35 @@
+const findNodeModules = require("find-node-modules")
+const fs = require("fs")
+const path = require("path")
+const consola = require("consola")
 import Vue from "vue"
 
 export function extendApp(opts) {
   const { dependencies } = opts.config
 
-  const plugins = Object.keys(dependencies)
-    .filter(_ => {
-      return _.includes("factor") && _.includes("plugin") ? true : false
-    })
-    .map(plugin => {
-      return require(plugin).default
+  const nodeModulesFolders = findNodeModules()
+
+  const plugins = []
+
+  const group = "@factor"
+
+  nodeModulesFolders
+    .map(folder => path.resolve(folder, `./${group}`))
+    .forEach(folder => {
+      if (fs.existsSync(folder)) {
+        fs.readdirSync(folder)
+          .filter(_ => {
+            return _.includes("plugin") ? true : false
+          })
+          .forEach(folder => {
+            try {
+              const plugin = require(`${group}/${folder}`)
+              plugins.push(plugin.default)
+            } catch (error) {
+              consola.error(error)
+            }
+          })
+      }
     })
 
   for (var _p in plugins) {

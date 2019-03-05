@@ -7,11 +7,6 @@ const favicon = require("serve-favicon")
 const consola = require("consola")
 const { createBundleRenderer } = require("vue-server-renderer")
 
-// const root = require("find-root")(__dirname)
-// const { flog, htmlPart, resolve } = require(`${root}/src/utils-server`)
-// const appUtils = require(`${root}/src/utils-global`)
-// const isLocal = __dirname.indexOf("plugin") !== -1
-
 const env = process.env.NODE_ENV || "production"
 const PROD = env === "production"
 
@@ -20,14 +15,13 @@ require("module-alias/register")
 export default (Vue, { config = {} }) => {
   return new class {
     constructor() {
-      console.log("ENV", env)
       Vue.$filters.addFilter("server", () => {
         return this.server()
       })
     }
 
     resolve(file) {
-      path.resolve(config.dir, file)
+      return path.resolve(config.baseDir, file)
     }
 
     getServerInfo() {
@@ -65,7 +59,7 @@ export default (Vue, { config = {} }) => {
       return require(this.resolve("./dist/vue-ssr-client-manifest.json"))
     }
 
-    handleError(err) {
+    handleError(req, res, err) {
       if (err.url) {
         res.redirect(err.url)
       } else if (err.code === 404) {
@@ -93,72 +87,65 @@ export default (Vue, { config = {} }) => {
         }
       }
 
-      renderer.renderToString(context, (err, html) => {
+      this.renderer.renderToString(context, (err, html) => {
         if (err) {
-          return this.handleError(err)
+          return this.handleError(req, res, err)
         }
 
-        if (!PROD) {
+        if (PROD) {
           res.set("cache-control", this.getCacheControl(req.url))
         }
 
         res.send(html)
 
         if (!PROD) {
-          consola.info(`Request: ${Date.now() - s}ms`)
+          consola.info(`Request: ${Date.now() - s}ms`, req.url)
         }
       })
     }
 
     server() {
-      const server = express()
+      this.server = express()
 
-      const tplIndexPath = Vue.$filters.applyFilters("html-template-path")
-
-      console.log("tplIndexPath", tplIndexPath)
       this.renderer = null
       this.readyPromise = null
       this.httpRoutine = this.getHttpRoutine()
 
       if (PROD) {
-        this.renderer = this.createRenderer(this.getProductionBundle(), {
-          template: htmlPart({ file: tplIndexPath }),
-          clientManifest: this.getProductionManifest()
-        })
+        this.renderer = this.createRenderer(
+          Vue.$files.getPath("productionBundle"),
+          {
+            template: Vue.$files.readHtmlFile(Vue.$files.getPath("template")),
+            clientManifest: Vue.$files.getPath("productionManifest")
+          }
+        )
       } else {
         const devServer = Vue.$filters.applyFilters("development-server")
 
         if (devServer) {
-          this.readyPromise = devServer(
-            server,
-            tplIndexPath,
-            (bundle, options) => {
-              this.renderer = this.createRenderer(bundle, options)
-            }
-          )
+          this.readyPromise = devServer(this.server, (bundle, options) => {
+            console.log("no really, update")
+            this.renderer = this.createRenderer(bundle, options)
+          })
         } else {
           consola.error(
             new Error(
-              "No development server added. Please add a development server to your app dependencies."
+              "No development server added. Add a development server to your app dependencies."
             )
           )
         }
       }
 
       if (!PROD) {
-        this.resolveStaticAssets(server)
+        this.resolveStaticAssets()
       }
 
-      server.get(
+      this.server.get(
         "*",
         PROD
           ? this.render
-          : async (req, res) => {
-              if (this.readyPromise) {
-                await this.readyPromise
-
-                this.render(req, res)
-              }
+          : (req, res) => {
+              this.readyPromise.then(() => this.render(req, res))
             }
       )
 
@@ -167,7 +154,7 @@ export default (Vue, { config = {} }) => {
 
         const port = config.port || 1975
 
-        this.getListenRoutine(server).listen(port, () => {
+        this.getListenRoutine(this.server).listen(port, () => {
           const url = `${this.httpRoutine}://localhost:${port}`
 
           consola.info(`Server @ ${url}`)
@@ -176,7 +163,7 @@ export default (Vue, { config = {} }) => {
         })
       }
 
-      return server
+      return this.server
     }
 
     getHttpRoutine() {
@@ -204,22 +191,19 @@ export default (Vue, { config = {} }) => {
       return `public, max-age=${mins * 30}, s-maxage=${mins * 60}`
     }
 
-    resolveStaticAssets(server) {
-      const favPath = "./static/img/logo-48.png"
-      const fav = this.resolve(favPath)
-      if (fav) {
-        server.use(favicon(favPath))
+    resolveStaticAssets() {
+      try {
+        const fav = Vue.$files.getPath("static/favicon.png")
+        this.server.use(favicon(fav))
+      } catch {
+        consola.info("Couldn't find [static/favicon.png]")
       }
 
-      const staticAssets = this.resolve("./static")
-      if (staticAssets) {
-        server.use("/", express.static(staticAssets))
-      }
+      const staticAssets = Vue.$files.getPath("static")
+      this.server.use("/", express.static(staticAssets))
 
-      const built = this.resolve("./dist")
-      if (built) {
-        server.use("/", express.static(built))
-      }
+      const built = Vue.$files.getPath("dist")
+      this.server.use("/", express.static(built))
     }
   }()
 }
