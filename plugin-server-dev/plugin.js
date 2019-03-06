@@ -8,18 +8,18 @@ const webpackHotMiddleware = require("webpack-hot-middleware")
 const webpackDevMiddleware = require("webpack-dev-middleware")
 const argv = require("yargs").argv
 
-export default (Vue, { config = {} }) => {
+export default (Factor, config) => {
   return new class {
     constructor() {
-      Vue.$filters.addFilter("development-server", () => {
+      Factor.$filters.addFilter("development-server", () => {
         return this.devServer()
       })
     }
 
     devServer() {
-      this.templatePath = Vue.$files.getPath("template")
-      this.confServer = Vue.$files.webpackConfig({ target: "server" })
-      this.confClient = Vue.$files.webpackConfig({ target: "client" })
+      this.templatePath = Factor.$files.getPath("template")
+      this.confServer = Factor.$files.webpackConfig({ target: "server" })
+      this.confClient = Factor.$files.webpackConfig({ target: "client" })
 
       return (server, cb) => {
         this.server = server
@@ -63,7 +63,7 @@ export default (Vue, { config = {} }) => {
       }
     }
     getTemplate() {
-      return Vue.$files.readHtmlFile(this.templatePath)
+      return Factor.$files.readHtmlFile(this.templatePath)
     }
     watcher() {
       // read template from disk and watch
@@ -103,7 +103,7 @@ export default (Vue, { config = {} }) => {
         this.clientManifest = JSON.parse(
           this.readFile(
             devMiddleware.fileSystem,
-            Vue.$files.getFilename("manifest")
+            Factor.$files.getFilename("manifest")
           )
         )
         this.updateServer("Client Compiler")
@@ -130,7 +130,7 @@ export default (Vue, { config = {} }) => {
         if (stats.errors.length !== 0) return
 
         this.bundle = JSON.parse(
-          this.readFile(mfs, Vue.$files.getFilename("bundle"))
+          this.readFile(mfs, Factor.$files.getFilename("bundle"))
         )
         this.updateServer("Server Compiler")
       })

@@ -1,7 +1,7 @@
 const NODE_ENV = process.env.NODE_ENV
 const path = require("path")
 
-module.exports = (Vue, { config }) => {
+module.exports = (Factor, config) => {
   return new class {
     constructor() {
       this.baseDir = config.baseDir
@@ -33,34 +33,34 @@ module.exports = (Vue, { config }) => {
 
       _.app = path.resolve(
         this.baseDir,
-        Vue.$filters.applyFilters("path-app", "./")
+        Factor.$filters.applyFilters("path-app", "./")
       )
 
       _.theme = path.resolve(
         this.baseDir,
-        Vue.$filters.applyFilters("path-theme", "./")
+        Factor.$filters.applyFilters("path-theme", "./")
       )
 
       _.dist = path.resolve(
         this.baseDir,
-        Vue.$filters.applyFilters("path-dist", "./dist")
+        Factor.$filters.applyFilters("path-dist", "./dist")
       )
 
       _.build = path.resolve(
         this.baseDir,
-        Vue.$filters.applyFilters("path-build", "./build")
+        Factor.$filters.applyFilters("path-build", "./build")
       )
 
       _.template = path.resolve(
         this.baseDir,
-        Vue.$filters.applyFilters("path-template", "./index.html")
+        Factor.$filters.applyFilters("path-template", "./index.html")
       )
 
       _.core = this.coreDir
 
       _.coreApp = path.resolve(
         this.coreDir,
-        Vue.$filters.applyFilters("path-core-app", "./app")
+        Factor.$filters.applyFilters("path-core-app", "./app")
       )
 
       _.entryServer = path.resolve(_.coreApp, this.getFilename("entryServer"))
@@ -79,7 +79,7 @@ module.exports = (Vue, { config }) => {
     }
 
     webpackConfig({ target }) {
-      return Vue.$filters.applyFilters("webpack-config", {
+      return Factor.$filters.applyFilters("webpack-config", {
         target,
         build: this.build
       })

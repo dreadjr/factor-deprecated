@@ -13,11 +13,14 @@ const isProd = env === "production"
 
 require("module-alias/register")
 
-export default (Vue, { config = {} }) => {
+export default (Factor, config) => {
   return new class {
     constructor() {
-      console.log("plugin-server")
-      Vue.$filters.addFilter("server", () => {
+      // If development or --serve variable is passed
+      // We should serve the app (locally)
+      this.serveApp = !isProd || config.serve ? true : false
+
+      Factor.$filters.addFilter("server", () => {
         return this.server()
       })
     }
@@ -27,15 +30,13 @@ export default (Vue, { config = {} }) => {
     }
 
     createRenderer(bundle, options) {
-      return createBundleRenderer(
-        bundle,
-        Object.assign(options, {
-          cache: new LRU({ max: 1000, maxAge: 1000 * 60 * 15 }),
-          runInNewContext: false,
-          basedir: this.resolve("./"),
-          directives: Vue.$filters.applyFilters("ssr-directives", {})
-        })
-      )
+      return createBundleRenderer(bundle, {
+        ...options,
+        cache: new LRU({ max: 1000, maxAge: 1000 * 60 * 15 }),
+        runInNewContext: false,
+        // basedir: this.resolve("./")
+        directives: Factor.$filters.applyFilters("ssr-directives", {})
+      })
 
       // "formatted-text"(vnode, directiveMeta) {
       //   const content = appUtils.cleanUserMessage(directiveMeta.value)
@@ -65,13 +66,13 @@ export default (Vue, { config = {} }) => {
           return this.handleError(req, res, err)
         }
 
-        if (isProd) {
+        if (isProd && (typeof config.cache == "undefined" || config.cache)) {
           res.set("cache-control", this.getCacheControl(req.url))
         }
 
         res.send(html)
 
-        if (!isProd) {
+        if (this.serveApp) {
           consola.success(`Request @[${req.url}] - ${Date.now() - s}ms`)
         }
       })
@@ -85,15 +86,19 @@ export default (Vue, { config = {} }) => {
       this.httpRoutine = this.getHttpRoutine()
 
       if (isProd) {
-        this.renderer = this.createRenderer(
-          Vue.$files.getPath("productionBundle"),
-          {
-            template: Vue.$files.readHtmlFile(Vue.$files.getPath("template")),
-            clientManifest: Vue.$files.getPath("productionManifest")
-          }
-        )
+        const bundle = require(Factor.$files.getPath("productionBundle"))
+        const clientManifest = require(Factor.$files.getPath(
+          "productionManifest"
+        ))
+
+        this.renderer = this.createRenderer(bundle, {
+          template: Factor.$files.readHtmlFile(
+            Factor.$files.getPath("template")
+          ),
+          clientManifest
+        })
       } else {
-        const devServer = Vue.$filters.applyFilters("development-server")
+        const devServer = Factor.$filters.applyFilters("development-server")
 
         if (devServer) {
           this.readyPromise = devServer(this.server, (bundle, options) => {
@@ -108,22 +113,24 @@ export default (Vue, { config = {} }) => {
         }
       }
 
-      if (!isProd) {
+      // Serve static assets
+      if (this.serveApp) {
         this.resolveStaticAssets()
       }
 
-      this.server.get(
-        "*",
-        isProd
-          ? this.render
-          : (req, res) => {
-              this.readyPromise.then(() => {
-                this.render(req, res)
-              })
-            }
-      )
+      // Set Express routine for all fallthrough paths
+      this.server.get("*", (req, res) => {
+        if (isProd) {
+          this.render(req, res)
+        } else {
+          this.readyPromise.then(() => {
+            this.render(req, res)
+          })
+        }
+      })
 
-      if (!isProd) {
+      // Serve the app from node
+      if (this.serveApp) {
         const port = config.port || 7000
 
         this.getListenRoutine(this.server).listen(port, () => {
@@ -164,20 +171,24 @@ export default (Vue, { config = {} }) => {
     }
 
     serve(path, cache) {
-      return express.static(Vue.$files.getPath(path), {
+      return express.static(Factor.$files.getPath(path), {
         maxAge: cache && isProd ? 1000 * 60 * 60 * 24 : 0
       })
     }
 
     resolveStaticAssets() {
       try {
-        const fav = Vue.$files.getPath("static/favicon.png")
+        const fav = Factor.$files.getPath("static/favicon.png")
         this.server.use(favicon(fav))
       } catch {
         consola.warn("Couldn't find [static/favicon.png]")
       }
 
+      // Global and Static Images/Manifests, etc..
       this.server.use("/static", this.serve("static", true))
+
+      // Serve distribution folder at Root URL
+      this.server.use("/", this.serve("dist", true))
     }
 
     getServerInfo() {

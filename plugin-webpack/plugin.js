@@ -1,4 +1,5 @@
 const path = require("path")
+const consola = require("consola")
 // const resolve = dir => path.join(__dirname, "..", dir)
 const merge = require("webpack-merge")
 const webpack = require("webpack")
@@ -20,12 +21,55 @@ const WebpackBar = require("webpackbar")
 const NODE_ENV = process.env.NODE_ENV
 const IS_PRODUCTION = NODE_ENV === "development" ? false : true
 
-export default Vue => {
+export default Factor => {
   return new class {
     constructor() {
-      Vue.$filters.addFilter("webpack-config", args => {
+      Factor.$filters.addFilter("build-production", args => {
+        return this.buildProduction(args)
+      })
+      Factor.$filters.addFilter("webpack-config", args => {
         return this.getConfig(args)
       })
+    }
+
+    buildCallback({ err, stats, resolve, reject }) {
+      if (err || stats.hasErrors()) {
+        consola.error(err)
+        reject(err)
+      }
+      // Done processing
+      consola.success("Done Processing")
+      resolve()
+    }
+
+    async buildProduction(args, cb) {
+      const serverConfig = this.getConfig({
+        build: "production",
+        target: "server"
+      })
+
+      const serverBuildPromise = new Promise((resolve, reject) => {
+        webpack(serverConfig, (err, stats) => {
+          this.buildCallback({ err, stats, resolve, reject, args })
+        })
+      })
+
+      const clientConfig = this.getConfig({
+        build: "production",
+        target: "client"
+      })
+
+      const clientBuildPromise = new Promise((resolve, reject) => {
+        webpack(clientConfig, (err, stats) => {
+          this.buildCallback({ err, stats, resolve, reject, args })
+        })
+      })
+
+      try {
+        return await Promise.all([serverBuildPromise, clientBuildPromise])
+      } catch (error) {
+        consola.error(error)
+      }
     }
 
     getConfig(args) {
@@ -40,7 +84,7 @@ export default Vue => {
 
       const testingConfig = testing ? this.testing() : {}
 
-      const analyzeConfig = testing ? this.analyze() : {}
+      const analyzeConfig = analyze ? this.analyze() : {}
 
       return merge(
         baseConfig,
@@ -54,7 +98,7 @@ export default Vue => {
     server() {
       return {
         target: "node",
-        entry: Vue.$files.getPath("entryServer"),
+        entry: Factor.$files.getPath("entryServer"),
         output: {
           filename: "server-bundle.js",
           libraryTarget: "commonjs2"
@@ -78,7 +122,7 @@ export default Vue => {
     client() {
       return {
         entry: {
-          app: Vue.$files.getPath("entryClient")
+          app: Factor.$files.getPath("entryClient")
         },
 
         plugins: [
@@ -94,7 +138,7 @@ export default Vue => {
     production() {
       return {
         mode: "production",
-        devtool: false,
+        // devtool: false,
         output: {
           publicPath: "/"
         },
@@ -118,7 +162,7 @@ export default Vue => {
         mode: "development",
         devtool: "eval-source-map",
         output: {
-          publicPath: Vue.$files.getPath("dist")
+          publicPath: Factor.$files.getPath("dist")
         },
         plugins: [new FriendlyErrorsWebpackPlugin()],
         performance: { hints: false } // Warns about large dev file sizes
@@ -138,14 +182,14 @@ export default Vue => {
     base(args) {
       const out = {
         output: {
-          path: Vue.$files.getPath("dist"),
+          path: Factor.$files.getPath("dist"),
           filename: "js/[name].[chunkhash].js"
         },
         resolve: {
           extensions: [".js", ".vue", ".json"],
           alias: {
-            "@": Vue.$files.getPath("theme"),
-            "~": Vue.$files.getPath("app")
+            "@": Factor.$files.getPath("theme"),
+            "~": Factor.$files.getPath("app")
           }
         },
 
@@ -159,7 +203,7 @@ export default Vue => {
             {
               test: /\.js$/,
               loader: "babel-loader",
-              options: Vue.$files.transpilerConfig("loader")
+              options: Factor.$files.transpilerConfig("loader")
             },
 
             {
@@ -199,8 +243,8 @@ export default Vue => {
         plugins: [
           new CopyWebpackPlugin([
             {
-              from: Vue.$files.getPath("static"),
-              to: "/static",
+              from: Factor.$files.getPath("static"),
+              to: "static",
               ignore: [".*"]
             }
           ]),

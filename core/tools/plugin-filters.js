@@ -1,4 +1,4 @@
-module.exports = (Vue, { config }) => {
+module.exports = (Factor, config) => {
   return new class {
     constructor() {
       this._filters = {}

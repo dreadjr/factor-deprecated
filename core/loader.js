@@ -4,9 +4,7 @@ const path = require("path")
 const consola = require("consola")
 import Vue from "vue"
 
-export function extendApp(opts) {
-  const { dependencies } = opts.config
-
+export function extendApp(config) {
   const nodeModulesFolders = findNodeModules()
 
   const plugins = []
@@ -38,11 +36,11 @@ export function extendApp(opts) {
         Vue.use({
           install(Vue) {
             const h = `$${_p}`
-            Vue[h] = Vue.prototype[h] = plugins[_p](Vue, opts)
+            Vue[h] = Vue.prototype[h] = plugins[_p](Vue, config)
           }
         })
       } else {
-        Vue.use(plugins[_p], opts)
+        Vue.use(plugins[_p], config)
       }
     }
   }

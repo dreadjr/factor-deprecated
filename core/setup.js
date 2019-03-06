@@ -1,30 +1,36 @@
-const Vue = require("vue")
+const Factor = require("vue")
 
-module.exports = args => {
+module.exports = config => {
   return new class {
     constructor() {
-      Vue.config.productionTip = false
-      Vue.config.devtools = true
-      Vue.config.silent = false
+      Factor.config.productionTip = false
+      Factor.config.devtools = true
+      Factor.config.silent = false
 
-      const filtersPlugin = require("./lib/plugin-filters")
-      const filesPlugin = require("./lib/plugin-files")
+      const filtersPlugin = require("./tools/plugin-filters")
+      const filesPlugin = require("./tools/plugin-files")
 
-      Vue.use({
-        install(Vue) {
-          Vue[`$filters`] = Vue.prototype[`$filters`] = filtersPlugin(Vue, args)
+      Factor.use({
+        install(Factor) {
+          Factor[`$filters`] = Factor.prototype[`$filters`] = filtersPlugin(
+            Factor,
+            config
+          )
         }
       })
 
-      Vue.use({
-        install(Vue) {
-          Vue[`$files`] = Vue.prototype[`$files`] = filesPlugin(Vue, args)
+      Factor.use({
+        install(Factor) {
+          Factor[`$files`] = Factor.prototype[`$files`] = filesPlugin(
+            Factor,
+            config
+          )
         }
       })
 
-      const { transpile = false } = args
+      const { transpile = false } = config
       if (transpile) {
-        require("@babel/register")(Vue.$files.transpilerConfig())
+        require("@babel/register")(Factor.$files.transpilerConfig())
       }
     }
   }()

@@ -1,10 +1,16 @@
-module.exports = args => {
-  args.transpile = true
-  args.config.coreDir = __dirname
+const Factor = require("vue")
 
-  require(`./setup`)(args)
+module.exports = async config => {
+  config.transpile = true
+  config.coreDir = __dirname
 
-  require("./loader").extendApp(args)
+  require(`./setup`)(config)
 
-  require("./load-server")(args)
+  require("./loader").extendApp(config)
+
+  if (config.build) {
+    await Factor.$filters.applyFilters("build-production", config)
+  }
+
+  Factor.$filters.applyFilters("server", "", config)
 }
