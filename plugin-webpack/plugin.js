@@ -66,11 +66,11 @@ export default Vue => {
           whitelist: /\.css$/
         }),
         plugins: [
-          new VueSSRServerPlugin(),
-          new WebpackBar({
-            name: "server",
-            color: "#FF0076"
-          })
+          new VueSSRServerPlugin()
+          // new WebpackBar({
+          //   name: "server",
+          //   color: "#FF0076"
+          // })
         ]
       }
     }
@@ -82,11 +82,11 @@ export default Vue => {
         },
 
         plugins: [
-          new VueSSRClientPlugin(),
-          new WebpackBar({
-            name: "client",
-            color: "#0496FF"
-          })
+          new VueSSRClientPlugin()
+          // new WebpackBar({
+          //   name: "client",
+          //   color: "#0496FF"
+          // })
         ]
       }
     }
@@ -200,7 +200,7 @@ export default Vue => {
           new CopyWebpackPlugin([
             {
               from: Vue.$files.getPath("static"),
-              to: "",
+              to: "/static",
               ignore: [".*"]
             }
           ]),

@@ -56,8 +56,6 @@ module.exports = (Vue, { config }) => {
         Vue.$filters.applyFilters("path-template", "./index.html")
       )
 
-      console.log("coreDIR", this.coreDir, config.coreDir)
-
       _.core = this.coreDir
 
       _.coreApp = path.resolve(

@@ -5,16 +5,18 @@ const https = require("https")
 const express = require("express")
 const favicon = require("serve-favicon")
 const consola = require("consola")
+
 const { createBundleRenderer } = require("vue-server-renderer")
 
 const env = process.env.NODE_ENV || "production"
-const PROD = env === "production"
+const isProd = env === "production"
 
 require("module-alias/register")
 
 export default (Vue, { config = {} }) => {
   return new class {
     constructor() {
+      console.log("plugin-server")
       Vue.$filters.addFilter("server", () => {
         return this.server()
       })
@@ -24,15 +26,6 @@ export default (Vue, { config = {} }) => {
       return path.resolve(config.baseDir, file)
     }
 
-    getServerInfo() {
-      const { version: expressVersion } = require("express/package.json")
-      const {
-        version: ssrVersion
-      } = require("vue-server-renderer/package.json")
-
-      return `express/${expressVersion} vue-server-renderer/${ssrVersion}`
-    }
-
     createRenderer(bundle, options) {
       return createBundleRenderer(
         bundle,
@@ -40,35 +33,15 @@ export default (Vue, { config = {} }) => {
           cache: new LRU({ max: 1000, maxAge: 1000 * 60 * 15 }),
           runInNewContext: false,
           basedir: this.resolve("./"),
-          directives: {
-            "formatted-text"(vnode, directiveMeta) {
-              const content = appUtils.cleanUserMessage(directiveMeta.value)
-              const domProps = vnode.data.domProps || (vnode.data.domProps = {})
-              domProps.innerHTML = content
-            }
-          }
+          directives: Vue.$filters.applyFilters("ssr-directives", {})
         })
       )
-    }
 
-    getProductionBundle() {
-      return require(this.resolve("./dist/vue-ssr-server-bundle.json"))
-    }
-
-    getProductionManifest() {
-      return require(this.resolve("./dist/vue-ssr-client-manifest.json"))
-    }
-
-    handleError(req, res, err) {
-      if (err.url) {
-        res.redirect(err.url)
-      } else if (err.code === 404) {
-        res.status(404).send("404 | Page Not Found")
-      } else {
-        res.status(500).send("500 | Internal Server Error")
-        consola.error(`error during render : ${req.url}`)
-        consola.error(err.stack)
-      }
+      // "formatted-text"(vnode, directiveMeta) {
+      //   const content = appUtils.cleanUserMessage(directiveMeta.value)
+      //   const domProps = vnode.data.domProps || (vnode.data.domProps = {})
+      //   domProps.innerHTML = content
+      // }
     }
 
     render(req, res) {
@@ -92,14 +65,14 @@ export default (Vue, { config = {} }) => {
           return this.handleError(req, res, err)
         }
 
-        if (PROD) {
+        if (isProd) {
           res.set("cache-control", this.getCacheControl(req.url))
         }
 
         res.send(html)
 
-        if (!PROD) {
-          consola.info(`Request: ${Date.now() - s}ms`, req.url)
+        if (!isProd) {
+          consola.success(`Request @[${req.url}] - ${Date.now() - s}ms`)
         }
       })
     }
@@ -111,7 +84,7 @@ export default (Vue, { config = {} }) => {
       this.readyPromise = null
       this.httpRoutine = this.getHttpRoutine()
 
-      if (PROD) {
+      if (isProd) {
         this.renderer = this.createRenderer(
           Vue.$files.getPath("productionBundle"),
           {
@@ -124,7 +97,6 @@ export default (Vue, { config = {} }) => {
 
         if (devServer) {
           this.readyPromise = devServer(this.server, (bundle, options) => {
-            console.log("no really, update")
             this.renderer = this.createRenderer(bundle, options)
           })
         } else {
@@ -136,28 +108,28 @@ export default (Vue, { config = {} }) => {
         }
       }
 
-      if (!PROD) {
+      if (!isProd) {
         this.resolveStaticAssets()
       }
 
       this.server.get(
         "*",
-        PROD
+        isProd
           ? this.render
           : (req, res) => {
-              this.readyPromise.then(() => this.render(req, res))
+              this.readyPromise.then(() => {
+                this.render(req, res)
+              })
             }
       )
 
-      if (!PROD) {
-        consola.info(`NODE_ENV: "${env}"`)
-
-        const port = config.port || 1975
+      if (!isProd) {
+        const port = config.port || 7000
 
         this.getListenRoutine(this.server).listen(port, () => {
           const url = `${this.httpRoutine}://localhost:${port}`
 
-          consola.info(`Server @ ${url}`)
+          consola.success(`Server @[${url}] - ${env}`)
 
           require("opn")(url)
         })
@@ -187,8 +159,14 @@ export default (Vue, { config = {} }) => {
 
     getCacheControl(url) {
       const mins = 60
-      console.log(`Cache Control Set @ ${url} for ${mins} minutes.`)
+      console.log(`Cache Control Set @[${url}] for ${mins} minutes.`)
       return `public, max-age=${mins * 30}, s-maxage=${mins * 60}`
+    }
+
+    serve(path, cache) {
+      return express.static(Vue.$files.getPath(path), {
+        maxAge: cache && isProd ? 1000 * 60 * 60 * 24 : 0
+      })
     }
 
     resolveStaticAssets() {
@@ -196,14 +174,31 @@ export default (Vue, { config = {} }) => {
         const fav = Vue.$files.getPath("static/favicon.png")
         this.server.use(favicon(fav))
       } catch {
-        consola.info("Couldn't find [static/favicon.png]")
+        consola.warn("Couldn't find [static/favicon.png]")
       }
 
-      const staticAssets = Vue.$files.getPath("static")
-      this.server.use("/", express.static(staticAssets))
+      this.server.use("/static", this.serve("static", true))
+    }
 
-      const built = Vue.$files.getPath("dist")
-      this.server.use("/", express.static(built))
+    getServerInfo() {
+      const { version: expressVersion } = require("express/package.json")
+      const {
+        version: ssrVersion
+      } = require("vue-server-renderer/package.json")
+
+      return `express/${expressVersion} vue-server-renderer/${ssrVersion}`
+    }
+
+    handleError(req, res, err) {
+      if (err.url) {
+        res.redirect(err.url)
+      } else if (err.code === 404) {
+        res.status(404).send("404 | Page Not Found")
+      } else {
+        res.status(500).send("500 | Internal Error")
+        consola.error(`error during render : ${req.url}`)
+        consola.error(err.stack)
+      }
     }
   }()
 }
