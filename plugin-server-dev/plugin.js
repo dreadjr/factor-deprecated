@@ -8,18 +8,30 @@ const webpackHotMiddleware = require("webpack-hot-middleware")
 const webpackDevMiddleware = require("webpack-dev-middleware")
 const argv = require("yargs").argv
 
-export default (Factor, config) => {
+export default (Factor, { config }) => {
   return new class {
     constructor() {
+      this.build = this.production ? "production" : "development"
+
       Factor.$filters.addFilter("development-server", () => {
         return this.devServer()
       })
     }
 
     devServer() {
-      this.templatePath = Factor.$files.getPath("template")
-      this.confServer = Factor.$files.webpackConfig({ target: "server" })
-      this.confClient = Factor.$files.webpackConfig({ target: "client" })
+      this.templatePath = Factor.$filters.get("html-template-path")
+
+      this.confServer = Factor.$filters.get("webpack-config", {
+        target: "server"
+      })
+
+      this.confClient = Factor.$filters.get("webpack-config", {
+        target: "client"
+      })
+
+      // console.log("this.confServer", this.confServer)
+
+      // console.log("this.confClient", this.confClient)
 
       return (server, cb) => {
         this.server = server
@@ -89,23 +101,28 @@ export default (Factor, config) => {
 
       // Dev Middleware - which injects changed files into the webpack bundle
       const clientCompiler = webpack(this.confClient)
+
       const devMiddleware = webpackDevMiddleware(clientCompiler, {
         publicPath: this.confClient.output.publicPath,
         logLevel: "silent"
       })
+
       this.server.use(devMiddleware)
 
       clientCompiler.plugin("done", stats => {
         stats = stats.toJson()
         stats.errors.forEach(error => consola.error(error))
         stats.warnings.forEach(error => consola.warn(error))
+
         if (stats.errors.length !== 0) return
+
         this.clientManifest = JSON.parse(
           this.readFile(
             devMiddleware.fileSystem,
-            Factor.$files.getFilename("manifest")
+            Factor.$filters.get("client-manifest-name")
           )
         )
+
         this.updateServer("Client Compiler")
       })
 
@@ -120,17 +137,18 @@ export default (Factor, config) => {
     }
 
     compileServer() {
-      // watch and update server renderer
       const serverCompiler = webpack(this.confServer)
       const mfs = new MFS()
       serverCompiler.outputFileSystem = mfs
       serverCompiler.watch({}, (err, stats) => {
+        console.log("COMPILE SERVER DONE")
+        // watch and update server renderer
         if (err) throw err
         stats = stats.toJson()
         if (stats.errors.length !== 0) return
 
         this.bundle = JSON.parse(
-          this.readFile(mfs, Factor.$files.getFilename("bundle"))
+          this.readFile(mfs, Factor.$filters.get("server-bundle-name"))
         )
         this.updateServer("Server Compiler")
       })

@@ -7,7 +7,7 @@ const nodeExternals = require("webpack-node-externals")
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin")
 const CopyWebpackPlugin = require("copy-webpack-plugin")
 const VueLoaderPlugin = require("vue-loader/lib/plugin")
-
+const CleanWebpackPlugin = require("clean-webpack-plugin")
 const TerserPlugin = require("terser-webpack-plugin")
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
@@ -20,18 +20,48 @@ const WebpackBar = require("webpackbar")
 
 const NODE_ENV = process.env.NODE_ENV
 
-export default Factor => {
+export default (Factor, { config }) => {
   return new class {
     constructor() {
-      Factor.$filters.addFilter("build-production", args => {
+      Factor.$filters.add("build-production", args => {
         return this.buildProduction(args)
       })
-      Factor.$filters.addFilter("webpack-config", args => {
+      Factor.$filters.add("webpack-config", args => {
         return this.getConfig(args)
       })
-    }
 
-    buildCallback({ err, stats, resolve, reject }) {}
+      this.sourceFolder = config.sourceFolder || "src"
+
+      this.sourcePath = path.resolve(config.baseDir, this.sourceFolder)
+
+      this.distributionFolder = config.distFolder || "dist"
+
+      this.distributionPath = path.resolve(
+        config.baseDir,
+        this.distributionFolder
+      )
+
+      Factor.$filters.add("distribution-folder", () => this.distributionFolder)
+      Factor.$filters.add("distribution-path", () => this.distributionPath)
+
+      Factor.$filters.add("server-bundle-name", () => "factor-server.json")
+
+      Factor.$filters.add("client-manifest-name", () => "factor-client.json")
+
+      Factor.$filters.add("client-manifest-path", () =>
+        path.resolve(
+          this.distributionPath,
+          Factor.$filters.get("client-manifest-name")
+        )
+      )
+
+      Factor.$filters.add("server-bundle-path", () =>
+        path.resolve(
+          this.distributionPath,
+          Factor.$filters.get("server-bundle-name")
+        )
+      )
+    }
 
     augmentBuild(name, compiler, { resolve, reject }) {
       var ProgressPlugin = require("webpack/lib/ProgressPlugin")
@@ -117,9 +147,20 @@ export default Factor => {
 
       const targetConfig = target == "server" ? this.server() : this.client()
 
-      const testingConfig = testing ? this.testing() : {}
+      const testingConfig = testing
+        ? { devtool: "#cheap-module-source-map" }
+        : {}
 
-      const analyzeConfig = analyze ? this.analyze() : {}
+      const analyzeConfig = analyze
+        ? { plugins: [new BundleAnalyzerPlugin()] }
+        : {}
+
+      // Only run this once (server build)
+      // If it runs twice it cleans it after the first
+      const cleanDistPlugin =
+        build == "production" && target == "server"
+          ? { plugins: [new CleanWebpackPlugin()] }
+          : {}
 
       return merge(
         baseConfig,
@@ -133,7 +174,7 @@ export default Factor => {
     server() {
       return {
         target: "node",
-        entry: Factor.$files.getPath("entryServer"),
+        entry: Factor.$filters.get("entry-server-path"),
         output: {
           filename: "server-bundle.js",
           libraryTarget: "commonjs2"
@@ -145,7 +186,9 @@ export default Factor => {
           whitelist: /\.css$/
         }),
         plugins: [
-          new VueSSRServerPlugin()
+          new VueSSRServerPlugin({
+            filename: Factor.$filters.get("server-bundle-name")
+          })
           // new WebpackBar({
           //   name: "server",
           //   color: "#FF0076"
@@ -157,11 +200,13 @@ export default Factor => {
     client() {
       return {
         entry: {
-          app: Factor.$files.getPath("entryClient")
+          app: Factor.$filters.get("entry-client-path")
         },
 
         plugins: [
-          new VueSSRClientPlugin()
+          new VueSSRClientPlugin({
+            filename: Factor.$filters.get("client-manifest-name")
+          })
           // new WebpackBar({
           //   name: "client",
           //   color: "#0496FF"
@@ -173,7 +218,7 @@ export default Factor => {
     production() {
       return {
         mode: "production",
-        // devtool: false,
+        devtool: false,
         output: {
           publicPath: "/"
         },
@@ -197,34 +242,25 @@ export default Factor => {
         mode: "development",
         devtool: "eval-source-map",
         output: {
-          publicPath: Factor.$files.getPath("dist")
+          publicPath: Factor.$filters.get("distribution-path")
         },
         plugins: [new FriendlyErrorsWebpackPlugin()],
         performance: { hints: false } // Warns about large dev file sizes
       }
     }
 
-    analyze() {
-      return { plugins: [new BundleAnalyzerPlugin()] }
-    }
-
-    testing() {
-      return {
-        devtool: "#cheap-module-source-map"
-      }
-    }
-
     base(args) {
       const out = {
         output: {
-          path: Factor.$files.getPath("dist"),
+          path: Factor.$filters.get("distribution-path"),
           filename: "js/[name].[chunkhash].js"
         },
         resolve: {
           extensions: [".js", ".vue", ".json"],
           alias: {
-            "@": Factor.$files.getPath("theme"),
-            "~": Factor.$files.getPath("app")
+            "@": Factor.$filters.get("src-path"),
+            "~": Factor.$filters.get("app-path"),
+            "#": Factor.$filters.get("theme-path")
           }
         },
 
@@ -278,7 +314,7 @@ export default Factor => {
         plugins: [
           new CopyWebpackPlugin([
             {
-              from: Factor.$files.getPath("static"),
+              from: Factor.$filters.get("static-path"),
               to: "static",
               ignore: [".*"]
             }

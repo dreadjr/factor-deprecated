@@ -13,7 +13,7 @@ const isProd = env === "production"
 
 require("module-alias/register")
 
-export default (Factor, config) => {
+export default (Factor, { config }) => {
   return new class {
     constructor() {
       // If development or --serve variable is passed
@@ -86,14 +86,14 @@ export default (Factor, config) => {
       this.httpRoutine = this.getHttpRoutine()
 
       if (isProd) {
-        const bundle = require(Factor.$files.getPath("productionBundle"))
-        const clientManifest = require(Factor.$files.getPath(
-          "productionManifest"
+        const bundle = require(Factor.$filters.get("server-bundle-path"))
+        const clientManifest = require(Factor.$filters.get(
+          "client-manifest-path"
         ))
 
         this.renderer = this.createRenderer(bundle, {
           template: Factor.$files.readHtmlFile(
-            Factor.$files.getPath("template")
+            Factor.$filters.get("html-template-path")
           ),
           clientManifest
         })

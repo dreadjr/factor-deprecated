@@ -2,7 +2,7 @@ const findNodeModules = require("find-node-modules")
 const fs = require("fs")
 const path = require("path")
 const consola = require("consola")
-import Vue from "vue"
+import Factor from "vue"
 
 export function extendApp(config) {
   const nodeModulesFolders = findNodeModules()
@@ -33,14 +33,14 @@ export function extendApp(config) {
   for (var _p in plugins) {
     if (plugins[_p]) {
       if (typeof plugins[_p] == "function") {
-        Vue.use({
-          install(Vue) {
+        Factor.use({
+          install(Factor) {
             const h = `$${_p}`
-            Vue[h] = Vue.prototype[h] = plugins[_p](Vue, config)
+            Factor[h] = Factor.prototype[h] = plugins[_p](Factor, { config })
           }
         })
       } else {
-        Vue.use(plugins[_p], config)
+        Factor.use(plugins[_p], config)
       }
     }
   }

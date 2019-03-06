@@ -21,6 +21,10 @@ module.exports = (Factor, config) => {
     }
 
     uniqueHash(obj) {
+      if (!obj) {
+        return obj
+      }
+
       let str = typeof obj !== "string" ? obj.toString() : obj
 
       str = str.substring(0, 500)
@@ -36,7 +40,7 @@ module.exports = (Factor, config) => {
 
     // Apply filters a maximum of one time, once they've run add to _applied property
     // If that is set just return it
-    applyFilters(name, data) {
+    get(name, data) {
       //if (!this._applied[name]) {
 
       // Remove "name" argument
@@ -70,7 +74,7 @@ module.exports = (Factor, config) => {
       return this._applied[name]
     }
 
-    addFilter(name, callback, { context = false, priority = 100 } = {}) {
+    add(name, filter, { context = false, priority = 100 } = {}) {
       if (!this._filters[name]) {
         this._filters[name] = {}
       }
@@ -78,11 +82,22 @@ module.exports = (Factor, config) => {
       // create unique ID
       // In certain situations (HMR, dev), the same filter can be added twice
       // Using objects and a hash identifier solves that
-      const id = "id" + this.uniqueHash(callback)
+      const id = "id" + this.uniqueHash(filter)
+
+      // For simpler assignments where no callback is needed
+      const callback = typeof filter != "function" ? () => filter : filter
 
       context = context || this
 
       this._filters[name][id] = { callback, context, priority }
+    }
+
+    addFilter(name, callback, args) {
+      return this.add(name, callback, args)
+    }
+
+    applyFilters(name, data) {
+      return this.get(name, data)
     }
   }()
 }
