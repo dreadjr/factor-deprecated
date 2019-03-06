@@ -4,6 +4,7 @@
   "main": "plugin.js",
   "license": "GPL-3.0",
   "dependencies": {
+    "cli-progress": "^2.1.1",
     "vue": "^2.6.8"
   },
   "devDependencies": {

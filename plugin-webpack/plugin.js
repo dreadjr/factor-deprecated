@@ -19,7 +19,6 @@ const VueSSRServerPlugin = require("vue-server-renderer/server-plugin")
 const WebpackBar = require("webpackbar")
 
 const NODE_ENV = process.env.NODE_ENV
-const IS_PRODUCTION = NODE_ENV === "development" ? false : true
 
 export default Factor => {
   return new class {
@@ -32,41 +31,77 @@ export default Factor => {
       })
     }
 
-    buildCallback({ err, stats, resolve, reject }) {
-      if (err || stats.hasErrors()) {
-        consola.error(err)
-        reject(err)
-      }
-      // Done processing
-      consola.success("Done Processing")
-      resolve()
+    buildCallback({ err, stats, resolve, reject }) {}
+
+    augmentBuild(name, compiler, { resolve, reject }) {
+      var ProgressPlugin = require("webpack/lib/ProgressPlugin")
+      const progressBar = require("cli-progress")
+
+      let bar = new progressBar.Bar(
+        {
+          format: `${name} [{bar}] {percentage}% {msg}`
+        },
+        progressBar.Presets.rect
+      )
+
+      bar.start(100, 1, { msg: "" })
+
+      compiler.apply(
+        new ProgressPlugin((ratio, msg) => {
+          const percent = ratio * 100
+
+          bar.update(percent, {
+            msg
+          })
+        })
+      )
+
+      compiler.run((err, stats) => {
+        bar.stop()
+
+        process.stdout.write(
+          stats.toString({
+            colors: true,
+            modules: false,
+            children: false,
+            chunks: false,
+            chunkModules: false
+          }) + "\n\n"
+        )
+
+        if (err || stats.hasErrors()) {
+          consola.error(err)
+          reject(err)
+        } else {
+          consola.success(`[${name}] Built`)
+          resolve()
+        }
+      })
     }
 
     async buildProduction(args, cb) {
-      const serverConfig = this.getConfig({
-        build: "production",
-        target: "server"
-      })
-
-      const serverBuildPromise = new Promise((resolve, reject) => {
-        webpack(serverConfig, (err, stats) => {
-          this.buildCallback({ err, stats, resolve, reject, args })
-        })
-      })
-
-      const clientConfig = this.getConfig({
-        build: "production",
-        target: "client"
-      })
-
-      const clientBuildPromise = new Promise((resolve, reject) => {
-        webpack(clientConfig, (err, stats) => {
-          this.buildCallback({ err, stats, resolve, reject, args })
-        })
-      })
-
       try {
-        return await Promise.all([serverBuildPromise, clientBuildPromise])
+        const serverConfig = this.getConfig({
+          build: "production",
+          target: "server"
+        })
+
+        await new Promise((resolve, reject) => {
+          const serverCompiler = webpack(serverConfig)
+          this.augmentBuild("Server", serverCompiler, { resolve, reject })
+        })
+
+        const clientConfig = this.getConfig({
+          build: "production",
+          target: "client"
+        })
+
+        await new Promise((resolve, reject) => {
+          const clientCompiler = webpack(clientConfig)
+          this.augmentBuild("Client", clientCompiler, { resolve, reject })
+        })
+
+        return
       } catch (error) {
         consola.error(error)
       }
