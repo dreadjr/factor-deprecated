@@ -4,8 +4,9 @@ import { createApp } from "./app"
 
 const { app, router, store, hook, utils } = createApp()
 
-// Add to <window> for testing
-window.Fiction = { app, router, store, hook, Vue }
+// Add to <window> for external use
+// For example, inside of Cypress integration tests
+window.Factor = { app, router, store, hook, Vue }
 window.appReady = true
 
 // router.beforeEach((to, from, next) =>

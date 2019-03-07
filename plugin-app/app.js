@@ -1,4 +1,4 @@
-import Vue from "vue"
+import Factor from "vue"
 
 // SSR
 //import metatagsMixin from "../lib/plugin-ssr-metatags"
@@ -18,10 +18,11 @@ export function createApp() {
   //const site = () => import("@theme/site")
   const appComponents = init()
   const { router, store } = appComponents
+
   // create the app instance.
   // here we inject the router, store and ssr context to all child components,
   // making them available everywhere as `this.$router` and `this.$store`.
-  const app = new Vue({
+  const app = new Factor({
     router,
     store,
     render: h => h(site)

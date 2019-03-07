@@ -171,24 +171,24 @@ export default (Factor, { config }) => {
     }
 
     serve(path, cache) {
-      return express.static(Factor.$files.getPath(path), {
+      return express.static(Factor.$filters.get(path), {
         maxAge: cache && isProd ? 1000 * 60 * 60 * 24 : 0
       })
     }
 
     resolveStaticAssets() {
+      const fav = Factor.$filters.get("favicon-path")
       try {
-        const fav = Factor.$files.getPath("static/favicon.png")
         this.server.use(favicon(fav))
       } catch {
-        consola.warn("Couldn't find [static/favicon.png]")
+        consola.warn(`Couldn't find [${fav}]`)
       }
 
       // Global and Static Images/Manifests, etc..
-      this.server.use("/static", this.serve("static", true))
+      this.server.use("/static", this.serve("static-path", true))
 
       // Serve distribution folder at Root URL
-      this.server.use("/", this.serve("dist", true))
+      this.server.use("/", this.serve("distribution-path", true))
     }
 
     getServerInfo() {

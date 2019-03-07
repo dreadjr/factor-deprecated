@@ -6,7 +6,7 @@ module.exports = async config => {
 
   require(`./setup`)(config)
 
-  require("./loader").extendApp(config)
+  require("./loader")(config)
 
   if (config.build) {
     await Factor.$filters.applyFilters("build-production", config)

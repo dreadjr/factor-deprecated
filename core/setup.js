@@ -7,24 +7,19 @@ module.exports = config => {
       Factor.config.devtools = true
       Factor.config.silent = false
 
-      const filtersPlugin = require("./tools/plugin-filters")
-      const filesPlugin = require("./tools/plugin-files")
-
       Factor.use({
         install(Factor) {
-          Factor[`$filters`] = Factor.prototype[`$filters`] = filtersPlugin(
-            Factor,
-            config
-          )
+          Factor[`$filters`] = Factor.prototype[
+            `$filters`
+          ] = require("@factor/plugin-filters")(Factor, config)
         }
       })
 
       Factor.use({
         install(Factor) {
-          Factor[`$files`] = Factor.prototype[`$files`] = filesPlugin(
-            Factor,
-            config
-          )
+          Factor[`$files`] = Factor.prototype[
+            `$files`
+          ] = require("@factor/plugin-files")(Factor, config)
         }
       })
 

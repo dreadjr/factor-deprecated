@@ -78,12 +78,28 @@ export default (Factor, { config }) => {
       return Factor.$files.readHtmlFile(this.templatePath)
     }
     watcher() {
-      // read template from disk and watch
+      const watchRegen = Factor.$filters.get("dev-watch-regenerate", [
+        this.templatePath
+      ])
 
-      chokidar.watch(this.templatePath).on("change", () => {
-        this.template = this.getTemplate()
-        this.updateServer("Template Changed")
-      })
+      const watchIgnore = Factor.$filters.get("dev-watch-ignore", [])
+      console.log("watchRegen", watchRegen, watchIgnore)
+
+      chokidar
+        .watch(watchRegen, {
+          ignored: watchIgnore,
+          ignoreInitial: true
+        })
+        .on("all", (event, path) => {
+          if (path === this.templatePath) {
+            this.template = this.getTemplate()
+          } else {
+            Factor.$events.$emit("filesChanged", { event, path })
+            consola.log(`${event} @[${path}]`)
+          }
+
+          this.updateServer("Files Changed")
+        })
     }
 
     compileClient() {

@@ -14,7 +14,11 @@ export default (Factor, { config }) => {
       })
 
       Factor.$filters.add("static-path", () => {
-        return path.resolve(Factor.$filters.get("src-path"), "static")
+        return path.resolve(Factor.$filters.get("app-path"), "static")
+      })
+
+      Factor.$filters.add("favicon-path", () => {
+        return path.resolve(Factor.$filters.get("static-path"), "favicon.png")
       })
 
       Factor.$filters.add("entry-client-path", () =>
