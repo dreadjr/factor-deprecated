@@ -129,7 +129,8 @@ export default (Factor, { config }) => {
       // hot middleware
       this.server.use(
         webpackHotMiddleware(clientCompiler, {
-          heartbeat: 5000
+          heartbeat: 5000,
+          log: false
         })
       )
 
@@ -141,7 +142,6 @@ export default (Factor, { config }) => {
       const mfs = new MFS()
       serverCompiler.outputFileSystem = mfs
       serverCompiler.watch({}, (err, stats) => {
-        console.log("COMPILE SERVER DONE")
         // watch and update server renderer
         if (err) throw err
         stats = stats.toJson()

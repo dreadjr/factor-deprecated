@@ -16,7 +16,6 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin
 const VueSSRClientPlugin = require("vue-server-renderer/client-plugin")
 const VueSSRServerPlugin = require("vue-server-renderer/server-plugin")
-const WebpackBar = require("webpackbar")
 
 const NODE_ENV = process.env.NODE_ENV
 
@@ -189,10 +188,6 @@ export default (Factor, { config }) => {
           new VueSSRServerPlugin({
             filename: Factor.$filters.get("server-bundle-name")
           })
-          // new WebpackBar({
-          //   name: "server",
-          //   color: "#FF0076"
-          // })
         ]
       }
     }
@@ -207,10 +202,6 @@ export default (Factor, { config }) => {
           new VueSSRClientPlugin({
             filename: Factor.$filters.get("client-manifest-name")
           })
-          // new WebpackBar({
-          //   name: "client",
-          //   color: "#0496FF"
-          // })
         ]
       }
     }

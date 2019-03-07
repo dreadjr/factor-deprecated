@@ -3,10 +3,6 @@ export default (Factor, { config }) => {
     constructor() {
       const path = require("path")
 
-      console.log(
-        "FactorFactorFactorFactorFactor",
-        Factor.$filters.get("src-path")
-      )
       Factor.$filters.add("app-path", () => path.resolve(config.baseDir))
 
       Factor.$filters.add("theme-path", () => path.resolve(config.baseDir))
