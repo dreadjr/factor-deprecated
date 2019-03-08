@@ -1,0 +1,13 @@
+{
+  "development": {
+    "algolia": {
+      "apiKey": "612998d607c4f1870d36f5374f568fd10b35d38a81a4dc0e1a170d074d222326"
+    }
+  },
+  "production": {},
+  "all": {
+    "something": {
+      "apiKey": "1e5eb0d202db9d7c020b9ed33ca89f17c33854ffdcbcaeb81a04df1c2c1d5dd2"
+    }
+  }
+}

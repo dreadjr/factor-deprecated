@@ -16,20 +16,29 @@ module.exports = (Factor, { config }) => {
 
       this.crypto = require("crypto-json")
 
-      Factor.$filters.add("development-server", () => {
-        let passwords = Factor.$filters.get("master-password")
+      this.doWatchers()
+    }
 
-        if (!passwords) {
-          const passwordsFile = path.resolve(Factor.$filters.get("config-path"), "passwords.json")
-          try {
-            passwords = require(passwordsFile)
-          } catch (error) {
-            consola.warn(`Couldn't Find Passwords @[${passwordsFile}] or Filter: 'master-password'`)
+    doWatchers() {
+      Factor.$filters.add("development-server", () => {
+        this.makeEncryptedSecrets()
+      })
+      Factor.$filters.add("dev-watchers", _ => {
+        const files = [this.keysRaw]
+
+        const watchers = [
+          {
+            files,
+            cb: (event, path) => {
+              if (path == this.keysRaw && event == "change") {
+                this.makeEncryptedSecrets()
+                return true
+              }
+            }
           }
-        }
-        if (passwords) {
-          this.makeEncryptedSecrets()
-        }
+        ]
+
+        return _.concat(watchers)
       })
     }
 
@@ -51,7 +60,21 @@ module.exports = (Factor, { config }) => {
       return this.crypto.decrypt(require(file), password)
     }
 
-    makeEncryptedSecrets(passwords = {}) {
+    makeEncryptedSecrets() {
+      let passwords = Factor.$filters.get("master-password")
+
+      if (!passwords) {
+        const passwordsFile = path.resolve(Factor.$filters.get("config-path"), "passwords.json")
+        try {
+          passwords = require(passwordsFile)
+        } catch {}
+      }
+
+      if (!passwords) {
+        consola.warn(`Couldn't Find Passwords @[${passwordsFile}] or Filter: 'master-password'`)
+        return
+      }
+
       if (!fs.pathExistsSync(this.keysRaw)) {
         consola.warn(`Couldn't Find Private Keys File @[${this.keysRaw}]`)
         return
@@ -73,7 +96,7 @@ module.exports = (Factor, { config }) => {
       }
 
       if (generated.length > 0) {
-        consola.success(`Generated Encrypted Keys [${generated.join(",")}]`)
+        consola.success(`Generated Encrypted Keys [${generated.join(", ")}]`)
       }
     }
   }()
