@@ -78,12 +78,23 @@ export default (Factor, { config }) => {
       return Factor.$files.readHtmlFile(this.templatePath)
     }
     watcher() {
-      const watchRegen = Factor.$filters.get("dev-watch-regenerate", [
-        this.templatePath
+      const watchers = Factor.$filters.get("dev-watchers", [
+        {
+          files: [this.templatePath],
+          ignore: [],
+          ignoreKeys: [],
+          cb: (event, path) => {
+            if (path === this.templatePath) {
+              this.template = this.getTemplate()
+              return true
+            }
+          }
+        }
       ])
 
-      const watchIgnore = Factor.$filters.get("dev-watch-ignore", [])
-      console.log("watchRegen", watchRegen, watchIgnore)
+      const watchRegen = this.flat(watchers.map(_ => _.files))
+      const watchIgnore = this.flat(watchers.map(_ => _.ignore))
+      const watchCallbacks = watchers.map(_ => _.cb)
 
       chokidar
         .watch(watchRegen, {
@@ -91,15 +102,15 @@ export default (Factor, { config }) => {
           ignoreInitial: true
         })
         .on("all", (event, path) => {
-          if (path === this.templatePath) {
-            this.template = this.getTemplate()
-          } else {
-            Factor.$events.$emit("filesChanged", { event, path })
-            consola.log(`${event} @[${path}]`)
+          const result = watchCallbacks.map(cb => cb(event, path))
+          if (result.some(_ => _)) {
+            this.updateServer("Files Changed")
           }
-
-          this.updateServer("Files Changed")
         })
+    }
+
+    flat(arr) {
+      return [].concat.apply([], arr).filter(_ => _)
     }
 
     compileClient() {
@@ -111,8 +122,8 @@ export default (Factor, { config }) => {
       this.confClient.output.filename = "[name].js"
       this.confClient.plugins.push(
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin()
-        // new webpack.NamedModulesPlugin() // HMR shows correct file names in console on update.
+        new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.NamedModulesPlugin() // HMR shows correct file names in console on update.
       )
 
       // Dev Middleware - which injects changed files into the webpack bundle
