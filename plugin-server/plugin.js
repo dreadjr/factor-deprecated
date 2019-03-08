@@ -87,29 +87,21 @@ export default (Factor, { config }) => {
 
       if (isProd) {
         const bundle = require(Factor.$filters.get("server-bundle-path"))
-        const clientManifest = require(Factor.$filters.get(
-          "client-manifest-path"
-        ))
+        const clientManifest = require(Factor.$filters.get("client-manifest-path"))
 
         this.renderer = this.createRenderer(bundle, {
-          template: Factor.$files.readHtmlFile(
-            Factor.$filters.get("html-template-path")
-          ),
+          template: Factor.$files.readHtmlFile(Factor.$filters.get("html-template-path")),
           clientManifest
         })
       } else {
-        const devServer = Factor.$filters.applyFilters("development-server")
+        const devServer = Factor.$filters.get("development-server")
 
         if (devServer) {
           this.readyPromise = devServer(this.server, (bundle, options) => {
             this.renderer = this.createRenderer(bundle, options)
           })
         } else {
-          consola.error(
-            new Error(
-              "No development server added. Add a development server to your app dependencies."
-            )
-          )
+          consola.error(new Error("No development server added. Add a development server to your app dependencies."))
         }
       }
 
@@ -193,9 +185,7 @@ export default (Factor, { config }) => {
 
     getServerInfo() {
       const { version: expressVersion } = require("express/package.json")
-      const {
-        version: ssrVersion
-      } = require("vue-server-renderer/package.json")
+      const { version: ssrVersion } = require("vue-server-renderer/package.json")
 
       return `express/${expressVersion} vue-server-renderer/${ssrVersion}`
     }

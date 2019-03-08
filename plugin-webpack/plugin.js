@@ -1,6 +1,6 @@
 const path = require("path")
 const consola = require("consola")
-// const resolve = dir => path.join(__dirname, "..", dir)
+
 const merge = require("webpack-merge")
 const webpack = require("webpack")
 const nodeExternals = require("webpack-node-externals")
@@ -12,8 +12,7 @@ const TerserPlugin = require("terser-webpack-plugin")
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin
 const VueSSRClientPlugin = require("vue-server-renderer/client-plugin")
 const VueSSRServerPlugin = require("vue-server-renderer/server-plugin")
 
@@ -35,10 +34,7 @@ export default (Factor, { config }) => {
 
       this.distributionFolder = config.distFolder || "dist"
 
-      this.distributionPath = path.resolve(
-        config.baseDir,
-        this.distributionFolder
-      )
+      this.distributionPath = path.resolve(config.baseDir, this.distributionFolder)
 
       Factor.$filters.add("distribution-folder", () => this.distributionFolder)
       Factor.$filters.add("distribution-path", () => this.distributionPath)
@@ -48,17 +44,11 @@ export default (Factor, { config }) => {
       Factor.$filters.add("client-manifest-name", () => "factor-client.json")
 
       Factor.$filters.add("client-manifest-path", () =>
-        path.resolve(
-          this.distributionPath,
-          Factor.$filters.get("client-manifest-name")
-        )
+        path.resolve(this.distributionPath, Factor.$filters.get("client-manifest-name"))
       )
 
       Factor.$filters.add("server-bundle-path", () =>
-        path.resolve(
-          this.distributionPath,
-          Factor.$filters.get("server-bundle-name")
-        )
+        path.resolve(this.distributionPath, Factor.$filters.get("server-bundle-name"))
       )
     }
 
@@ -141,33 +131,19 @@ export default (Factor, { config }) => {
 
       const baseConfig = this.base(args)
 
-      const buildConfig =
-        build == "production" ? this.production() : this.development()
+      const buildConfig = build == "production" ? this.production() : this.development()
 
       const targetConfig = target == "server" ? this.server() : this.client()
 
-      const testingConfig = testing
-        ? { devtool: "#cheap-module-source-map" }
-        : {}
+      const testingConfig = testing ? { devtool: "#cheap-module-source-map" } : {}
 
-      const analyzeConfig = analyze
-        ? { plugins: [new BundleAnalyzerPlugin()] }
-        : {}
+      const analyzeConfig = analyze ? { plugins: [new BundleAnalyzerPlugin()] } : {}
 
       // Only run this once (server build)
       // If it runs twice it cleans it after the first
-      const cleanDistPlugin =
-        build == "production" && target == "server"
-          ? { plugins: [new CleanWebpackPlugin()] }
-          : {}
+      const cleanDistPlugin = build == "production" && target == "server" ? { plugins: [new CleanWebpackPlugin()] } : {}
 
-      return merge(
-        baseConfig,
-        buildConfig,
-        targetConfig,
-        testingConfig,
-        analyzeConfig
-      )
+      return merge(baseConfig, buildConfig, targetConfig, testingConfig, analyzeConfig)
     }
 
     server() {

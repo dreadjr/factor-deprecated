@@ -29,13 +29,7 @@ module.exports = (Factor, { config }) => {
 
       str = str.substring(0, 500)
 
-      return str
-        .split("")
-        .reduce(
-          (prevHash, currVal) =>
-            ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
-          0
-        )
+      return str.split("").reduce((prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0, 0)
     }
 
     // Apply filters a maximum of one time, once they've run add to _applied property
@@ -90,6 +84,8 @@ module.exports = (Factor, { config }) => {
       context = context || this
 
       this._filters[name][id] = { callback, context, priority }
+
+      return filter
     }
 
     addFilter(name, callback, args) {

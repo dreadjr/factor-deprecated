@@ -13,7 +13,7 @@ export default (Factor, { config }) => {
     constructor() {
       this.build = this.production ? "production" : "development"
 
-      Factor.$filters.addFilter("development-server", () => {
+      Factor.$filters.add("development-server", () => {
         return this.devServer()
       })
     }
@@ -28,10 +28,6 @@ export default (Factor, { config }) => {
       this.confClient = Factor.$filters.get("webpack-config", {
         target: "client"
       })
-
-      // console.log("this.confServer", this.confServer)
-
-      // console.log("this.confClient", this.confClient)
 
       return (server, cb) => {
         this.server = server
@@ -57,10 +53,7 @@ export default (Factor, { config }) => {
     // Read file using Memory File Service
     readFile(mfs, file) {
       try {
-        return mfs.readFileSync(
-          path.join(this.confClient.output.path, file),
-          "utf-8"
-        )
+        return mfs.readFileSync(path.join(this.confClient.output.path, file), "utf-8")
       } catch (error) {}
     }
 
@@ -115,10 +108,7 @@ export default (Factor, { config }) => {
 
     compileClient() {
       // modify client config to work with hot middleware
-      this.confClient.entry.app = [
-        "webpack-hot-middleware/client?quiet=true",
-        this.confClient.entry.app
-      ]
+      this.confClient.entry.app = ["webpack-hot-middleware/client?quiet=true", this.confClient.entry.app]
       this.confClient.output.filename = "[name].js"
       this.confClient.plugins.push(
         new webpack.HotModuleReplacementPlugin(),
@@ -144,10 +134,7 @@ export default (Factor, { config }) => {
         if (stats.errors.length !== 0) return
 
         this.clientManifest = JSON.parse(
-          this.readFile(
-            devMiddleware.fileSystem,
-            Factor.$filters.get("client-manifest-name")
-          )
+          this.readFile(devMiddleware.fileSystem, Factor.$filters.get("client-manifest-name"))
         )
 
         this.updateServer("Client Compiler")
@@ -174,9 +161,7 @@ export default (Factor, { config }) => {
         stats = stats.toJson()
         if (stats.errors.length !== 0) return
 
-        this.bundle = JSON.parse(
-          this.readFile(mfs, Factor.$filters.get("server-bundle-name"))
-        )
+        this.bundle = JSON.parse(this.readFile(mfs, Factor.$filters.get("server-bundle-name")))
         this.updateServer("Server Compiler")
       })
     }

@@ -4,7 +4,7 @@ const glob = require("glob").sync
 const fs = require("fs-extra")
 const consola = require("consola")
 const findNodeModules = require("find-node-modules")
-module.exports = (Factor, config) => {
+module.exports = (Factor, { config }) => {
   return new class {
     constructor() {
       this.namespace = "factor"
@@ -18,21 +18,20 @@ module.exports = (Factor, config) => {
 
       this.build = this.production ? "production" : "development"
 
-      Factor.$filters.add("plugins-loader", () =>
-        path.resolve(config.baseDir, "extend/plugins.js")
-      )
-      Factor.$filters.add("themes-loader", () =>
-        path.resolve(config.baseDir, "extend/themes.js")
-      )
-      Factor.$filters.add("active-loader", () =>
-        path.resolve(config.baseDir, "extend/active.js")
-      )
+      const genFilesFolder = Factor.$filters.add("generated-files-folder", path.resolve(config.baseDir, ".factor"))
+
+      Factor.$filters.add("plugins-loader", () => path.resolve(genFilesFolder, "load-plugins.js"))
+      Factor.$filters.add("themes-loader", () => path.resolve(genFilesFolder, "load-themes.js"))
+      Factor.$filters.add("active-loader", () => path.resolve(genFilesFolder, "load-active.js"))
 
       this.addWatchers()
-      this.generateLoaders()
     }
 
     addWatchers() {
+      Factor.$filters.add("development-server", () => {
+        this.generateLoaders()
+      })
+
       Factor.$filters.add("dev-watchers", _ => {
         const files = this.getExtensionPatterns()
 
@@ -40,10 +39,7 @@ module.exports = (Factor, config) => {
           {
             files,
             cb: (event, path) => {
-              if (
-                path.includes("package.json") &&
-                (event == "add" || event == "unlink")
-              ) {
+              if (path.includes("package.json") && (event == "add" || event == "unlink")) {
                 this.generateLoaders()
                 return true
               }
@@ -160,9 +156,7 @@ module.exports = (Factor, config) => {
         patterns.push(path.resolve(_, `./${this.namespace}*/package.json`))
       })
 
-      patterns.push(
-        path.resolve(config.baseDir, `**/@${this.namespace}/**/package.json`)
-      )
+      patterns.push(path.resolve(config.baseDir, `**/@${this.namespace}/**/package.json`))
 
       return patterns
     }
@@ -188,10 +182,7 @@ module.exports = (Factor, config) => {
         : false
 
       if (activeTheme) {
-        const themePluginPattern = path.resolve(
-          activeTheme.filepath,
-          `**/@${this.namespace}/**/package.json`
-        )
+        const themePluginPattern = path.resolve(activeTheme.filepath, `**/@${this.namespace}/**/package.json`)
         packages = packages.concat(glob(themePluginPattern))
       }
 
@@ -206,16 +197,26 @@ module.exports = (Factor, config) => {
       }
     }
 
+    sortPriority(arr) {
+      if (!arr || arr.length == 0) return arr
+
+      return arr.sort((a, b) => {
+        const ap = a.priority || 100
+        const bp = b.priority || 100
+        return ap < bp ? -1 : ap > bp ? 1 : 0
+      })
+    }
+
     makeLoader(packages, key) {
       const loader = []
       packages.forEach(_ => {
         const filepath = _.replace("package.json", "")
-        const { name, priority = 100, version } = require(_)
+        const { name, factor: { priority = 100 } = {}, version } = require(_)
         const id = name.split(key)[1].replace(/\-/g, "")
         loader.push({ name, priority, version, id, filepath, pkg: _ })
       })
 
-      return loader
+      return this.sortPriority(loader)
     }
   }()
 }

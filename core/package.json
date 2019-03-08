@@ -12,9 +12,11 @@
     "@babel/preset-env": "^7.3.4",
     "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.3.4",
-    "babel-plugin-dynamic-import-node": "^2.2.0"
+    "babel-plugin-dynamic-import-node": "^2.2.0",
+    "@factor/plugin-server": "^1.0.0"
   },
   "devDependencies": {
+    "@factor/plugin-server-dev": "1.0.0",
     "@factor/plugin-files": "^1.0.0",
     "@factor/plugin-filters": "^1.0.0",
     "@factor/plugin-webpack": "^1.0.0",

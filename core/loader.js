@@ -1,10 +1,6 @@
-const fs = require("fs")
-const path = require("path")
-const glob = require("glob").sync
-const consola = require("consola")
 const Factor = require("vue")
 
-module.exports = config => {
+module.exports = ({ config }) => {
   return new class {
     constructor() {
       const plugins = require(Factor.$filters.get("plugins-loader"))
