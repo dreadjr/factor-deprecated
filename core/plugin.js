@@ -1,16 +1,24 @@
 const Factor = require("vue")
 
 module.exports = async pkg => {
-  pkg.transpile = true
   pkg.coreDir = __dirname
 
-  const config = require(`./setup`)(pkg)
+  require("@babel/register")(require("./transpile.js")())
 
-  require("./loader")({ config })
+  const loader = require("@factor/loader").loaderBuild(Factor, { pkg, target: "build" })
 
-  if (config.build) {
-    await Factor.$filters.applyFilters("build-production", config)
+  loader.setup()
+  loader.extendBuild()
+
+  // User defined setup hook
+  // The code that trigger this should be in the start.js in the app 'config' folder
+  if (typeof pkg.setup == "function") {
+    pkg.setup(Factor)
   }
 
-  Factor.$filters.applyFilters("server", "", config)
+  if (pkg.build) {
+    await Factor.$filters.applyFilters("build-production", pkg)
+  }
+
+  Factor.$filters.applyFilters("server", "", pkg)
 }

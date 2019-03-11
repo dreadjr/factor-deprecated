@@ -1,0 +1,11 @@
+{
+  "name": "@factor/loader",
+  "version": "1.0.0",
+  "main": "plugin.js",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@factor/config": "^1.0.0",
+    "@factor/filters": "^1.0.0",
+    "detect-node": "^2.0.4"
+  }
+}

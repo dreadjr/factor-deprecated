@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
+  "factor": {
+    "target": "build"
+  },
   "dependencies": {
     "consola": "^2.5.6",
     "express": "^4.16.4",

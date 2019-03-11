@@ -5,14 +5,9 @@ import Factor from "vue"
 // const utilsGlobal = require("./utils-global")
 // const utils = Object.assign({}, utilsFile, utilsGlobal)
 
-// Disable annoying console logging
-Factor.config.productionTip = false
-Factor.config.devtools = true
-Factor.config.silent = false
-
 // // Config
 // import config from "~/config"
-// import { extendApp, registerComponents, mixinApp } from "./loader"
+import extender from "@factor/extend"
 
 // // Router + Store
 import { createStore } from "./store"
@@ -45,7 +40,12 @@ export default () => {
   // // Extend with plugins, happens before router and store so we can add hooks for them
   // extendApp(opts)
 
+  //const loader = () => import("@factor/loader")
+  // loader(Factor)
+  //console.log("loader", loader)
+
   // registerComponents(opts)
+  extender(Factor, { pkg: process.env.FACTOR_CONFIG }).extendApp()
 
   const store = createStore()
 

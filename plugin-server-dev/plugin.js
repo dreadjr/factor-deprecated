@@ -13,9 +13,14 @@ export default (Factor, { config }) => {
     constructor() {
       this.build = this.production ? "production" : "development"
 
-      Factor.$filters.add("development-server", () => {
-        return this.devServer()
-      })
+      Factor.$filters.add(
+        "development-server",
+        () => {
+          console.log("START SER")
+          return this.devServer()
+        },
+        { priority: 500 }
+      )
     }
 
     devServer() {

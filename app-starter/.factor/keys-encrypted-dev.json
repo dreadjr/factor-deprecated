@@ -1,13 +1,17 @@
 {
   "development": {
-    "algolia": {
-      "apiKey": "353c21dab243829de0bb6a050b2b4826a19f7b18f85e073d3bdf4ab3c5a83da2"
+    "example": {
+      "apiKey": "8b84800d929b173ed6e42db16c5015a5"
     }
   },
-  "production": {},
+  "production": {
+    "example": {
+      "apiKey": "a65fac618c0cbde3f5f9e627a71b5e60"
+    }
+  },
   "all": {
-    "something": {
-      "apiKey": "b4cb2c0c912ab38de9511ecefd69e4cd1fbe97b6b18406c7b63cecfc63f5f767"
+    "anotherExample": {
+      "apiKey": "529114ebf272eb3f2f01380517245063"
     }
   }
 }

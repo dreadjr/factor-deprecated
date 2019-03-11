@@ -1,13 +1,13 @@
-import Vue from "vue"
-import VueRouter from "vue-router"
+import Factor from "vue"
+import FactorRouter from "vue-router"
 import qs from "qs"
 
-Vue.use(VueRouter)
+Factor.use(FactorRouter)
 
 export function createRouter() {
-  const routes = [] // Vue.$filters.applyFilters("routes", []).filter(_ => _) // remove undefined
+  const routes = [] //Factor.$filters.get("routes", []).filter(_ => _) // remove undefined
 
-  const router = new VueRouter({
+  const router = new FactorRouter({
     routes,
     mode: "history", // abstract
     scrollBehavior(to, from, savedPosition) {
@@ -30,7 +30,7 @@ export function createRouter() {
     }
   })
 
-  Vue.$router = router
+  Factor.$router = router
 
   return router
 }

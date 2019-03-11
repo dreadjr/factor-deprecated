@@ -3,14 +3,14 @@ import Factor from "vue"
 // SSR
 //import metatagsMixin from "../lib/plugin-ssr-metatags"
 
-// App Entry Component
-import site from "@/site"
-
 // mixin for handling metatags
 // Must be OUTSIDE of create APP or gets added on every page load
 //Vue.mixin(metatagsMixin)
 
 import init from "./init"
+
+// App Entry Component
+import site from "./site"
 
 // Expose a factory function that creates a fresh set of store, router,
 // app instances on each call (which is called for each SSR request)

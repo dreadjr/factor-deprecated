@@ -1,4 +1,4 @@
-module.exports = (Factor, { config }) => {
+module.exports = Factor => {
   return new class {
     constructor() {
       this._filters = {}

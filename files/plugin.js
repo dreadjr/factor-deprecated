@@ -1,37 +1,22 @@
-const NODE_ENV = process.env.NODE_ENV
 const path = require("path")
-const glob = require("glob").sync
-const fs = require("fs-extra")
-const consola = require("consola")
-const findNodeModules = require("find-node-modules")
-module.exports = (Factor, { config }) => {
+
+module.exports = (Factor, { pkg }) => {
   return new class {
     constructor() {
       this.namespace = "factor"
 
-      this.baseDir = config.baseDir
-      this.coreDir = config.coreDir
-
-      this.nodeModulesFolders = findNodeModules()
-
-      this.production = NODE_ENV === "development" ? false : true
+      this.production = process.env.NODE_ENV === "development" ? false : true
 
       this.build = this.production ? "production" : "development"
 
-      const genFilesFolder = Factor.$filters.add("generated-files-folder", path.resolve(config.baseDir, ".factor"))
-
-      Factor.$filters.add("plugins-loader", () => path.resolve(genFilesFolder, "load-plugins.js"))
-      Factor.$filters.add("themes-loader", () => path.resolve(genFilesFolder, "load-themes.js"))
-      Factor.$filters.add("active-loader", () => path.resolve(genFilesFolder, "load-active.js"))
+      if (this.build == "development") {
+        this.generateLoaders()
+      }
 
       this.addWatchers()
     }
 
     addWatchers() {
-      Factor.$filters.add("development-server", () => {
-        this.generateLoaders()
-      })
-
       Factor.$filters.add("dev-watchers", _ => {
         const files = this.getExtensionPatterns()
 
@@ -57,7 +42,14 @@ module.exports = (Factor, { config }) => {
 
       this.makeLoaderFile({
         loader: pluginsLoader,
-        destination: Factor.$filters.get("plugins-loader")
+        destination: Factor.$filters.get("plugins-loader-build"),
+        target: "build"
+      })
+
+      this.makeLoaderFile({
+        loader: pluginsLoader,
+        destination: Factor.$filters.get("plugins-loader-app"),
+        target: "app"
       })
 
       this.makeLoaderFile({
@@ -65,23 +57,29 @@ module.exports = (Factor, { config }) => {
         destination: Factor.$filters.get("themes-loader")
       })
 
-      consola.success(
+      require("consola").success(
         `Made Loaders [${Date.now() - s}ms]`,
         `- ${pluginsLoader.length} Plugins`,
         `- ${themesLoader.length} Themes`
       )
 
-      if (config.theme == activeTheme) {
-        consola.success(`Active Theme: "${config.theme}"`)
+      if (pkg.theme == activeTheme) {
+        require("consola").success(`Active Theme: "${pkg.theme}"`)
       }
     }
 
-    makeLoaderFile({ loader, destination, target = "node" }) {
+    makeLoaderFile({ loader, destination, target }) {
+      const fs = require("fs-extra")
+
+      if (target) {
+        loader = loader.filter(_ => _.target == target || _.target == "all")
+      }
+
       const lines = [`/* GENERATED FILE */`]
 
       lines.push("const files = {}")
 
-      if (target == "node") {
+      if (true || target == "build") {
         loader.forEach(({ id, name }) => {
           lines.push(`files["${id}"] = require("${name}").default`)
         })
@@ -130,7 +128,7 @@ module.exports = (Factor, { config }) => {
     }
 
     readHtmlFile(filePath, { minify = true, name = "" } = {}) {
-      const fs = require("fs")
+      const fs = require("fs-extra")
 
       let str = fs.readFileSync(filePath, "utf-8")
 
@@ -151,18 +149,18 @@ module.exports = (Factor, { config }) => {
     getExtensionPatterns() {
       let patterns = []
 
-      this.nodeModulesFolders.forEach(_ => {
+      require("find-node-modules")().forEach(_ => {
         patterns.push(path.resolve(_, `./@${this.namespace}/**/package.json`))
         patterns.push(path.resolve(_, `./${this.namespace}*/package.json`))
       })
 
-      patterns.push(path.resolve(config.baseDir, `**/@${this.namespace}/**/package.json`))
+      patterns.push(path.resolve(Factor.$baseDir, `**/@${this.namespace}/**/package.json`))
 
       return patterns
     }
 
     getExtensions() {
-      const plug = "package.json"
+      const glob = require("glob").sync
 
       let activeTheme = false
 
@@ -172,12 +170,12 @@ module.exports = (Factor, { config }) => {
       })
 
       const themesPackages = packages.filter(_ => _.includes("theme"))
-      const themesLoader = this.makeLoader(themesPackages, "theme")
+      const themesLoader = this.makeLoader(themesPackages, { key: "theme" })
 
-      activeTheme = config.theme
+      activeTheme = pkg.theme
         ? themesLoader.find((_, index) => {
             themesLoader[index].active = true
-            return _.id == config.theme
+            return _.id == pkg.theme
           })
         : false
 
@@ -188,7 +186,7 @@ module.exports = (Factor, { config }) => {
 
       const pluginPackages = packages.filter(_ => _.includes("plugin"))
 
-      const pluginsLoader = this.makeLoader(pluginPackages, "plugin")
+      const pluginsLoader = this.makeLoader(pluginPackages, { key: "plugin" })
 
       return {
         activeTheme,
@@ -207,13 +205,13 @@ module.exports = (Factor, { config }) => {
       })
     }
 
-    makeLoader(packages, key) {
+    makeLoader(packages, { key }) {
       const loader = []
       packages.forEach(_ => {
         const filepath = _.replace("package.json", "")
-        const { name, factor: { priority = 100 } = {}, version } = require(_)
+        const { name, factor: { priority = 100, target = "all" } = {}, version } = require(_)
         const id = name.split(key)[1].replace(/\-/g, "")
-        loader.push({ name, priority, version, id, filepath, pkg: _ })
+        loader.push({ name, priority, version, id, filepath, pkg: _, target })
       })
 
       return this.sortPriority(loader)

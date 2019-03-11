@@ -289,7 +289,8 @@ export default (Factor, { config }) => {
           new VueLoaderPlugin(),
           new webpack.DefinePlugin({
             "process.env.NODE_ENV": JSON.stringify(NODE_ENV),
-            "process.env.VUE_ENV": JSON.stringify(args.target)
+            "process.env.VUE_ENV": JSON.stringify(args.target),
+            "process.env.FACTOR_CONFIG": JSON.stringify(config)
           })
         ],
         stats: { children: false }

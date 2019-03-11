@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
+  "factor": {
+    "target": "build"
+  },
   "dependencies": {
+    "@factor/extend": "^1.0.0",
     "vuex-router-sync": "^5.0.0",
     "qs": "^6.6.0",
     "vue": "^2.6.7",

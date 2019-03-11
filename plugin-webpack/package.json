@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
+  "factor": {
+    "target": "build"
+  },
   "dependencies": {
     "cli-progress": "^2.1.1",
     "vue": "^2.6.8"

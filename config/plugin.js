@@ -1,14 +1,17 @@
 const path = require("path")
-const fs = require("fs-extra")
-const consola = require("consola")
-module.exports = (Factor, { config }) => {
+module.exports = (Factor, { pkg }) => {
   return new class {
     constructor() {
-      this.configFolder = Factor.$filters.add("config-path", path.resolve(config.baseDir, "config"))
+      this.configFolder = Factor.$filters.add("config-path", path.resolve(pkg.baseDir, "config"))
       this.keysPublic = path.resolve(this.configFolder, Factor.$filters.add("keys-public-name", "keys-public.json"))
       this.keysRaw = path.resolve(this.configFolder, Factor.$filters.add("keys-private-name", "keys-private-raw.json"))
 
-      const genFilesFolder = Factor.$filters.get("generated-files-folder")
+      const genFilesFolder = Factor.$filters.add("generated-files-folder", path.resolve(pkg.baseDir, ".factor"))
+      Factor.$filters.add("plugins-loader-app", path.resolve(genFilesFolder, "load-plugins-app.js"))
+      Factor.$filters.add("plugins-loader-build", path.resolve(genFilesFolder, "load-plugins-build.js"))
+      Factor.$filters.add("themes-loader", path.resolve(genFilesFolder, "load-themes.js"))
+      Factor.$filters.add("active-loader", path.resolve(genFilesFolder, "load-active.js"))
+
       this.keysEncryptedDev = path.resolve(genFilesFolder, "keys-encrypted-dev.json")
       this.keysEncryptedProd = path.resolve(genFilesFolder, "keys-encrypted-prod.json")
 
@@ -44,9 +47,15 @@ module.exports = (Factor, { config }) => {
 
     getPublicConfig() {
       const env = process.env.NODE_ENV || "production"
-      const publicConfig = require(this.keysPublic)
+      let publicConfig = {}
+      try {
+        publicConfig = require(this.keysPublic)
+      } catch {
+        consola.error(`Can't find public config file @[${this.keysPublic}]`)
+      }
+
       return this.merge.all([
-        config,
+        pkg,
         publicConfig[env],
         publicConfig.all,
         {
@@ -61,22 +70,25 @@ module.exports = (Factor, { config }) => {
     }
 
     makeEncryptedSecrets() {
+      const fs = require("fs-extra")
+      const consola = require("consola")
       let passwords = Factor.$filters.get("master-password")
 
+      let passwordsFile = null
       if (!passwords) {
-        const passwordsFile = path.resolve(Factor.$filters.get("config-path"), "passwords.json")
+        passwordsFile = path.resolve(Factor.$filters.get("config-path"), "passwords.json")
         try {
           passwords = require(passwordsFile)
         } catch {}
       }
 
       if (!passwords) {
-        consola.warn(`Couldn't Find Passwords @[${passwordsFile}] or Filter: 'master-password'`)
+        consola.error(`Couldn't Find Passwords @[${passwordsFile}] or Filter: 'master-password'`)
         return
       }
 
       if (!fs.pathExistsSync(this.keysRaw)) {
-        consola.warn(`Couldn't Find Private Keys File @[${this.keysRaw}]`)
+        consola.error(`Couldn't Find Private Keys File @[${this.keysRaw}]`)
         return
       }
 
