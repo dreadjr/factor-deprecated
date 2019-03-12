@@ -29,10 +29,10 @@ export default Factor => {
       })
 
       Factor.$paths.add({
-        "server-bundle-name": "factor-client.json",
-        "client-manifest-name": "factor-server.json",
+        "server-bundle-name": "factor-server.json",
+        "client-manifest-name": "factor-client.json",
         "client-manifest": path.resolve(Factor.$paths.get("dist"), "factor-client.json"),
-        "server-bundle-path": path.resolve(Factor.$paths.get("dist"), "factor-server.json")
+        "server-bundle": path.resolve(Factor.$paths.get("dist"), "factor-server.json")
       })
     }
 
@@ -127,7 +127,11 @@ export default Factor => {
       // If it runs twice it cleans it after the first
       const cleanDistPlugin = build == "production" && target == "server" ? { plugins: [new CleanWebpackPlugin()] } : {}
 
-      return merge(baseConfig, buildConfig, targetConfig, testingConfig, analyzeConfig)
+      const merged = merge(baseConfig, buildConfig, targetConfig, testingConfig, analyzeConfig)
+
+      console.log("MERGED", merged, args)
+
+      return merged
     }
 
     server() {
@@ -223,7 +227,6 @@ export default Factor => {
               loader: "babel-loader",
               options: Factor.$files.transpilerConfig("loader")
             },
-
             {
               test: /\.(png|jpg|gif|svg)$/,
               loader: "file-loader",
@@ -255,9 +258,9 @@ export default Factor => {
         performance: {
           maxEntrypointSize: 600000
         },
-        node: {
-          fs: "empty"
-        },
+        // node: {
+        //   fs: "empty"
+        // },
         plugins: [
           new CopyWebpackPlugin([
             {
