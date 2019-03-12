@@ -1,6 +1,6 @@
 const path = require("path")
-
-module.exports = (Factor, { pkg }) => {
+const consola = require("consola")
+module.exports = Factor => {
   return new class {
     constructor() {
       this.assign()
@@ -10,7 +10,7 @@ module.exports = (Factor, { pkg }) => {
     }
 
     assign() {
-      const { baseDir } = pkg
+      const { baseDir } = Factor.$pkg
       const _ = {}
       _.app = baseDir
       _.source = path.resolve(baseDir, "src")
@@ -25,7 +25,7 @@ module.exports = (Factor, { pkg }) => {
     }
 
     get(p) {
-      return this.paths[p]
+      return this.paths[p] || null
     }
 
     add(p, value) {
@@ -41,8 +41,21 @@ module.exports = (Factor, { pkg }) => {
         "@": this.get("source"),
         "~": this.get("app"),
         "@generated": this.get("generated"),
-        "@config": this.get("config")
+        "@config": this.get("config"),
+        "@entry": this.get("entry")
       }
+    }
+
+    replaceWithAliases(p) {
+      const aliases = this.getAliases()
+
+      for (const ali in aliases) {
+        if (aliases[ali]) {
+          p = p.replace(aliases[ali], ali)
+        }
+      }
+
+      return p
     }
   }()
 }

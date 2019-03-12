@@ -1,4 +1,4 @@
-export default (Factor, { config }) => {
+export default Factor => {
   return new class {
     constructor() {}
   }()

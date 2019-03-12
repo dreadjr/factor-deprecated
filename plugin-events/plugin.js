@@ -1,3 +1,3 @@
-module.exports = (Factor, { config }) => {
+export default Factor => {
   return new Factor()
 }

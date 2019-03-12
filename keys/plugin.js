@@ -1,4 +1,4 @@
-module.exports = (Factor, { pkg }) => {
+module.exports = Factor => {
   return new class {
     constructor() {
       const conf = Factor.$paths.get("config")

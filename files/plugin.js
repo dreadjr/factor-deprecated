@@ -1,6 +1,6 @@
 const path = require("path")
 
-module.exports = (Factor, { pkg }) => {
+module.exports = Factor => {
   return new class {
     constructor() {
       const gen = Factor.$paths.get("generated")
@@ -31,7 +31,10 @@ module.exports = (Factor, { pkg }) => {
           {
             files,
             cb: (event, path) => {
-              if (path.includes("package.json") && (event == "add" || event == "unlink")) {
+              if (
+                (path.includes("package.json") || path.includes("plugin.js")) &&
+                (event == "add" || event == "unlink")
+              ) {
                 this.generateLoaders()
                 return true
               }
@@ -70,8 +73,8 @@ module.exports = (Factor, { pkg }) => {
         `- ${themesLoader.length} Themes`
       )
 
-      if (pkg.theme == activeTheme) {
-        require("consola").success(`Active Theme: "${pkg.theme}"`)
+      if (Factor.$pkg.theme == activeTheme) {
+        require("consola").success(`Active Theme: "${Factor.$pkg.theme}"`)
       }
     }
 
@@ -87,14 +90,14 @@ module.exports = (Factor, { pkg }) => {
       lines.push("const files = {}")
 
       if (true || target == "build") {
-        loader.forEach(({ id, name }) => {
-          lines.push(`files["${id}"] = require("${name}").default`)
+        loader.forEach(({ id, module }) => {
+          lines.push(`files["${id}"] = require("${module}").default`)
         })
 
         lines.push(`module.exports = files`)
       } else {
-        loader.forEach(({ id, name }) => {
-          lines.push(`files["${id}"] = () => import("${name}")`)
+        loader.forEach(({ id, module }) => {
+          lines.push(`files["${id}"] = () => import("${module}")`)
         })
 
         lines.push(`export default files`)
@@ -161,7 +164,7 @@ module.exports = (Factor, { pkg }) => {
         patterns.push(path.resolve(_, `./${this.namespace}*/package.json`))
       })
 
-      patterns.push(path.resolve(Factor.$paths.get("app"), `**/@${this.namespace}/**/package.json`))
+      patterns.push(path.resolve(Factor.$paths.get("app"), `**/plugin.js`))
 
       return patterns
     }
@@ -179,10 +182,10 @@ module.exports = (Factor, { pkg }) => {
       const themesPackages = packages.filter(_ => _.includes("theme"))
       const themesLoader = this.makeLoader(themesPackages, { key: "theme" })
 
-      activeTheme = pkg.theme
+      activeTheme = Factor.$pkg.theme
         ? themesLoader.find((_, index) => {
             themesLoader[index].active = true
-            return _.id == pkg.theme
+            return _.id == Factor.$pkg.theme
           })
         : false
 
@@ -215,10 +218,23 @@ module.exports = (Factor, { pkg }) => {
     makeLoader(packages, { key }) {
       const loader = []
       packages.forEach(_ => {
-        const filepath = _.replace("package.json", "")
-        const { name, factor: { priority = 100, target = "all" } = {}, version } = require(_)
-        const id = name.split(key)[1].replace(/\-/g, "")
-        loader.push({ name, priority, version, id, filepath, pkg: _, target })
+        let fields = {}
+        if (_.includes("package.json")) {
+          const { name, factor: { priority = 100, target = "all" } = {} } = require(_)
+
+          fields = { ...fields, module: name, priority, target, id: name.split(key)[1].replace(/\-/g, "") }
+        } else {
+          const basename = path.basename(_)
+          const folderName = path.basename(path.dirname(_))
+
+          fields = {
+            module: Factor.$paths.replaceWithAliases(_),
+            target: "app",
+            id: basename == "plugin.js" ? folderName : basename.replace(/\.js|plugin|\-/gi, "")
+          }
+        }
+
+        loader.push(fields)
       })
 
       return this.sortPriority(loader)

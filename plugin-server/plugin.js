@@ -13,20 +13,20 @@ const isProd = env === "production"
 
 require("module-alias/register")
 
-export default (Factor, { config }) => {
+export default Factor => {
   return new class {
     constructor() {
       // If development or --serve variable is passed
       // We should serve the app (locally)
-      this.serveApp = !isProd || config.serve ? true : false
+      this.serveApp = !isProd || Factor.$config.serve ? true : false
 
-      Factor.$filters.addFilter("server", () => {
+      Factor.$filters.add("server", () => {
         return this.server()
       })
     }
 
     resolve(file) {
-      return path.resolve(config.baseDir, file)
+      return path.resolve(Factor.$config.baseDir, file)
     }
 
     createRenderer(bundle, options) {
@@ -66,7 +66,7 @@ export default (Factor, { config }) => {
           return this.handleError(req, res, err)
         }
 
-        if (isProd && (typeof config.cache == "undefined" || config.cache)) {
+        if (isProd && (typeof Factor.$config.cache == "undefined" || Factor.$config.cache)) {
           res.set("cache-control", this.getCacheControl(req.url))
         }
 
@@ -123,7 +123,7 @@ export default (Factor, { config }) => {
 
       // Serve the app from node
       if (this.serveApp) {
-        const port = config.port || 7000
+        const port = Factor.$config.port || 7000
 
         this.getListenRoutine(this.server).listen(port, () => {
           const url = `${this.httpRoutine}://localhost:${port}`

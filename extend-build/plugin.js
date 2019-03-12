@@ -1,6 +1,7 @@
-module.exports = (Factor, { pkg, target }) => {
+module.exports = (Factor, FACTOR_CONFIG) => {
   return new class {
     constructor() {
+      Factor.$pkg = FACTOR_CONFIG
       this.setup()
     }
 
@@ -9,18 +10,18 @@ module.exports = (Factor, { pkg, target }) => {
       Factor.config.devtools = true
       Factor.config.silent = false
 
-      const core = {}
-      core.filters = require(`@factor/filters`)
-      core.paths = require(`@factor/paths`)
-      core.keys = require(`@factor/keys`)
-      core.files = require(`@factor/files`)
-      core.config = require(`@factor/config`)
+      const _ = {}
+      _.filters = require(`@factor/filters`)
+      _.paths = require(`@factor/paths`)
+      _.keys = require(`@factor/keys`)
+      _.files = require(`@factor/files`)
+      _.config = require(`@factor/config`)
 
       Factor.use({
         install(Factor) {
-          for (var _p in core) {
+          for (var _p in _) {
             const h = `$${_p}`
-            Factor[h] = Factor.prototype[h] = core[_p](Factor, { pkg })
+            Factor[h] = Factor.prototype[h] = _[_p](Factor)
           }
         }
       })
@@ -30,18 +31,15 @@ module.exports = (Factor, { pkg, target }) => {
     }
 
     injectPlugins(plugins) {
-      const opts = { config: Factor.$config.get() }
       for (var _p in plugins) {
         if (plugins[_p]) {
           if (typeof plugins[_p] == "function") {
             Factor.use({
               install(Factor) {
                 const h = `$${_p}`
-                Factor[h] = Factor.prototype[h] = plugins[_p](Factor, opts)
+                Factor[h] = Factor.prototype[h] = plugins[_p](Factor)
               }
             })
-          } else {
-            Factor.use(plugins[_p], opts)
           }
         }
       }

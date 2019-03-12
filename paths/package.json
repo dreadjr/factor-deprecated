@@ -7,7 +7,9 @@
     "priority": 15,
     "target": "build"
   },
-  "dependencies": {},
+  "dependencies": {
+    "consola": "^2.5.6"
+  },
   "devDependencies": {
     "consola": "^2.5.6"
   }

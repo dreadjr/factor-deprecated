@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="factor-app">123
+  <div id="app" class="factor-app">
     <router-view />
     <site-progress-bar />
   </div>

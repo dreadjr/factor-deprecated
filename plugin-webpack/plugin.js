@@ -18,11 +18,11 @@ const VueSSRServerPlugin = require("vue-server-renderer/server-plugin")
 
 const NODE_ENV = process.env.NODE_ENV
 
-export default (Factor, { config }) => {
+export default Factor => {
   return new class {
     constructor() {
-      Factor.$filters.add("build-production", args => {
-        return this.buildProduction(args)
+      Factor.$filters.add("build-production", () => {
+        return this.buildProduction()
       })
       Factor.$filters.add("webpack-config", args => {
         return this.getConfig(args)
@@ -82,7 +82,7 @@ export default (Factor, { config }) => {
       })
     }
 
-    async buildProduction(args, cb) {
+    async buildProduction() {
       try {
         const serverConfig = this.getConfig({
           build: "production",
@@ -270,7 +270,7 @@ export default (Factor, { config }) => {
           new webpack.DefinePlugin({
             "process.env.NODE_ENV": JSON.stringify(NODE_ENV),
             "process.env.VUE_ENV": JSON.stringify(args.target),
-            "process.env.FACTOR_CONFIG": JSON.stringify(config)
+            "process.env.FACTOR_CONFIG": JSON.stringify(Factor.$config)
           })
         ],
         stats: { children: false }

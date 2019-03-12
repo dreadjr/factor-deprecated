@@ -8,7 +8,7 @@ const webpackHotMiddleware = require("webpack-hot-middleware")
 const webpackDevMiddleware = require("webpack-dev-middleware")
 const argv = require("yargs").argv
 
-export default (Factor, { config }) => {
+export default Factor => {
   return new class {
     constructor() {
       this.build = this.production ? "production" : "development"
@@ -120,39 +120,43 @@ export default (Factor, { config }) => {
         new webpack.NamedModulesPlugin() // HMR shows correct file names in console on update.
       )
 
-      // Dev Middleware - which injects changed files into the webpack bundle
-      const clientCompiler = webpack(this.confClient)
+      try {
+        // Dev Middleware - which injects changed files into the webpack bundle
+        const clientCompiler = webpack(this.confClient)
 
-      const devMiddleware = webpackDevMiddleware(clientCompiler, {
-        publicPath: this.confClient.output.publicPath,
-        logLevel: "silent"
-      })
+        const devMiddleware = webpackDevMiddleware(clientCompiler, {
+          publicPath: this.confClient.output.publicPath,
+          logLevel: "silent"
+        })
 
-      this.server.use(devMiddleware)
+        this.server.use(devMiddleware)
 
-      clientCompiler.plugin("done", stats => {
-        stats = stats.toJson()
-        stats.errors.forEach(error => consola.error(error))
-        stats.warnings.forEach(error => consola.warn(error))
+        clientCompiler.plugin("done", stats => {
+          stats = stats.toJson()
+          stats.errors.forEach(error => consola.error(error))
+          stats.warnings.forEach(error => consola.warn(error))
 
-        if (stats.errors.length !== 0) return
+          if (stats.errors.length !== 0) return
 
-        this.clientManifest = JSON.parse(
-          this.readFile(devMiddleware.fileSystem, Factor.$paths.get("client-manifest-name"))
+          this.clientManifest = JSON.parse(
+            this.readFile(devMiddleware.fileSystem, Factor.$paths.get("client-manifest-name"))
+          )
+
+          this.updateServer("Client Compiler")
+        })
+
+        // hot middleware
+        this.server.use(
+          webpackHotMiddleware(clientCompiler, {
+            heartbeat: 5000,
+            log: false
+          })
         )
 
-        this.updateServer("Client Compiler")
-      })
-
-      // hot middleware
-      this.server.use(
-        webpackHotMiddleware(clientCompiler, {
-          heartbeat: 5000,
-          log: false
-        })
-      )
-
-      this.server.getConnections
+        this.server.getConnections
+      } catch (error) {
+        consola.error("[WEBPACK CLIENT COMPILER]", error)
+      }
     }
 
     compileServer() {

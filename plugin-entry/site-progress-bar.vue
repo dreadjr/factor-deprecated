@@ -26,7 +26,8 @@ export default {
   mounted() {
     // this.$jquery(this.$el).remove()
     // document.querySelector("#app").append(this.$el)
-    this.$hook.$on("progressBar", action => {
+
+    this.$events.$on("progressBar", action => {
       this[action]()
     })
   },
