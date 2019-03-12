@@ -28,28 +28,12 @@ export default (Factor, { config }) => {
         return this.getConfig(args)
       })
 
-      this.sourceFolder = config.sourceFolder || "src"
-
-      this.sourcePath = path.resolve(config.baseDir, this.sourceFolder)
-
-      this.distributionFolder = config.distFolder || "dist"
-
-      this.distributionPath = path.resolve(config.baseDir, this.distributionFolder)
-
-      Factor.$filters.add("distribution-folder", () => this.distributionFolder)
-      Factor.$filters.add("distribution-path", () => this.distributionPath)
-
-      Factor.$filters.add("server-bundle-name", () => "factor-server.json")
-
-      Factor.$filters.add("client-manifest-name", () => "factor-client.json")
-
-      Factor.$filters.add("client-manifest-path", () =>
-        path.resolve(this.distributionPath, Factor.$filters.get("client-manifest-name"))
-      )
-
-      Factor.$filters.add("server-bundle-path", () =>
-        path.resolve(this.distributionPath, Factor.$filters.get("server-bundle-name"))
-      )
+      Factor.$paths.add({
+        "server-bundle-name": "factor-client.json",
+        "client-manifest-name": "factor-server.json",
+        "client-manifest": path.resolve(Factor.$paths.get("dist"), "factor-client.json"),
+        "server-bundle-path": path.resolve(Factor.$paths.get("dist"), "factor-server.json")
+      })
     }
 
     augmentBuild(name, compiler, { resolve, reject }) {
@@ -149,7 +133,7 @@ export default (Factor, { config }) => {
     server() {
       return {
         target: "node",
-        entry: Factor.$filters.get("entry-server-path"),
+        entry: Factor.$paths.get("entry-server"),
         output: {
           filename: "server-bundle.js",
           libraryTarget: "commonjs2"
@@ -162,7 +146,7 @@ export default (Factor, { config }) => {
         }),
         plugins: [
           new VueSSRServerPlugin({
-            filename: Factor.$filters.get("server-bundle-name")
+            filename: Factor.$paths.get("server-bundle-name")
           })
         ]
       }
@@ -171,12 +155,12 @@ export default (Factor, { config }) => {
     client() {
       return {
         entry: {
-          app: Factor.$filters.get("entry-client-path")
+          app: Factor.$paths.get("entry-client")
         },
 
         plugins: [
           new VueSSRClientPlugin({
-            filename: Factor.$filters.get("client-manifest-name")
+            filename: Factor.$paths.get("client-manifest-name")
           })
         ]
       }
@@ -209,7 +193,7 @@ export default (Factor, { config }) => {
         mode: "development",
         devtool: "eval-source-map",
         output: {
-          publicPath: Factor.$filters.get("distribution-path")
+          publicPath: Factor.$paths.get("dist")
         },
         plugins: [new FriendlyErrorsWebpackPlugin()],
         performance: { hints: false } // Warns about large dev file sizes
@@ -219,16 +203,12 @@ export default (Factor, { config }) => {
     base(args) {
       const out = {
         output: {
-          path: Factor.$filters.get("distribution-path"),
+          path: Factor.$paths.get("dist"),
           filename: "js/[name].[chunkhash].js"
         },
         resolve: {
           extensions: [".js", ".vue", ".json"],
-          alias: {
-            "@": Factor.$filters.get("src-path"),
-            "~": Factor.$filters.get("app-path"),
-            "#": Factor.$filters.get("theme-path")
-          }
+          alias: Factor.$paths.getAliases()
         },
 
         module: {
@@ -281,7 +261,7 @@ export default (Factor, { config }) => {
         plugins: [
           new CopyWebpackPlugin([
             {
-              from: Factor.$filters.get("static-path"),
+              from: Factor.$paths.get("static"),
               to: "static",
               ignore: [".*"]
             }

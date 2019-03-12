@@ -3,11 +3,18 @@ const path = require("path")
 module.exports = (Factor, { pkg }) => {
   return new class {
     constructor() {
+      const gen = Factor.$paths.get("generated")
+      const res = path.resolve
+
       this.namespace = "factor"
 
-      this.production = process.env.NODE_ENV === "development" ? false : true
+      this.build = process.env.NODE_ENV === "production" ? "production" : "development"
 
-      this.build = this.production ? "production" : "development"
+      Factor.$paths.add({
+        "plugins-loader-app": res(gen, "load-plugins-app.js"),
+        "plugins-loader-build": res(gen, "load-plugins-build.js"),
+        "themes-loader": res(gen, "load-themes.js")
+      })
 
       if (this.build == "development") {
         this.generateLoaders()
@@ -42,19 +49,19 @@ module.exports = (Factor, { pkg }) => {
 
       this.makeLoaderFile({
         loader: pluginsLoader,
-        destination: Factor.$filters.get("plugins-loader-build"),
+        destination: Factor.$paths.get("plugins-loader-build"),
         target: "build"
       })
 
       this.makeLoaderFile({
         loader: pluginsLoader,
-        destination: Factor.$filters.get("plugins-loader-app"),
+        destination: Factor.$paths.get("plugins-loader-app"),
         target: "app"
       })
 
       this.makeLoaderFile({
         loader: themesLoader,
-        destination: Factor.$filters.get("themes-loader")
+        destination: Factor.$paths.get("themes-loader")
       })
 
       require("consola").success(
@@ -154,7 +161,7 @@ module.exports = (Factor, { pkg }) => {
         patterns.push(path.resolve(_, `./${this.namespace}*/package.json`))
       })
 
-      patterns.push(path.resolve(Factor.$baseDir, `**/@${this.namespace}/**/package.json`))
+      patterns.push(path.resolve(Factor.$paths.get("app"), `**/@${this.namespace}/**/package.json`))
 
       return patterns
     }
@@ -179,10 +186,10 @@ module.exports = (Factor, { pkg }) => {
           })
         : false
 
-      if (activeTheme) {
-        const themePluginPattern = path.resolve(activeTheme.filepath, `**/@${this.namespace}/**/package.json`)
-        packages = packages.concat(glob(themePluginPattern))
-      }
+      // if (activeTheme) {
+      //   const themePluginPattern = path.resolve(activeTheme.filepath, `**/@${this.namespace}/**/package.json`)
+      //   packages = packages.concat(glob(themePluginPattern))
+      // }
 
       const pluginPackages = packages.filter(_ => _.includes("plugin"))
 

@@ -86,11 +86,11 @@ export default (Factor, { config }) => {
       this.httpRoutine = this.getHttpRoutine()
 
       if (isProd) {
-        const bundle = require(Factor.$filters.get("server-bundle-path"))
-        const clientManifest = require(Factor.$filters.get("client-manifest-path"))
+        const bundle = require(Factor.$paths.get("server-bundle"))
+        const clientManifest = require(Factor.$paths.get("client-manifest"))
 
         this.renderer = this.createRenderer(bundle, {
-          template: Factor.$files.readHtmlFile(Factor.$filters.get("html-template-path")),
+          template: Factor.$files.readHtmlFile(Factor.$paths.get("template")),
           clientManifest
         })
       } else {
@@ -163,13 +163,13 @@ export default (Factor, { config }) => {
     }
 
     serve(path, cache) {
-      return express.static(Factor.$filters.get(path), {
+      return express.static(path, {
         maxAge: cache && isProd ? 1000 * 60 * 60 * 24 : 0
       })
     }
 
     resolveStaticAssets() {
-      const fav = Factor.$filters.get("favicon-path")
+      const fav = Factor.$paths.get("favicon")
       try {
         this.server.use(favicon(fav))
       } catch {
@@ -177,10 +177,10 @@ export default (Factor, { config }) => {
       }
 
       // Global and Static Images/Manifests, etc..
-      this.server.use("/static", this.serve("static-path", true))
+      this.server.use("/static", this.serve(Factor.$paths.get("static"), true))
 
       // Serve distribution folder at Root URL
-      this.server.use("/", this.serve("distribution-path", true))
+      this.server.use("/", this.serve(Factor.$paths.get("dist"), true))
     }
 
     getServerInfo() {

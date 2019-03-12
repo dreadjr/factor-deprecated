@@ -16,7 +16,6 @@ export default (Factor, { config }) => {
       Factor.$filters.add(
         "development-server",
         () => {
-          console.log("START SER")
           return this.devServer()
         },
         { priority: 500 }
@@ -24,7 +23,7 @@ export default (Factor, { config }) => {
     }
 
     devServer() {
-      this.templatePath = Factor.$filters.get("html-template-path")
+      this.templatePath = Factor.$paths.get("template")
 
       this.confServer = Factor.$filters.get("webpack-config", {
         target: "server"
@@ -139,7 +138,7 @@ export default (Factor, { config }) => {
         if (stats.errors.length !== 0) return
 
         this.clientManifest = JSON.parse(
-          this.readFile(devMiddleware.fileSystem, Factor.$filters.get("client-manifest-name"))
+          this.readFile(devMiddleware.fileSystem, Factor.$paths.get("client-manifest-name"))
         )
 
         this.updateServer("Client Compiler")
@@ -166,7 +165,7 @@ export default (Factor, { config }) => {
         stats = stats.toJson()
         if (stats.errors.length !== 0) return
 
-        this.bundle = JSON.parse(this.readFile(mfs, Factor.$filters.get("server-bundle-name")))
+        this.bundle = JSON.parse(this.readFile(mfs, Factor.$paths.get("server-bundle-name")))
         this.updateServer("Server Compiler")
       })
     }

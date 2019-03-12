@@ -20,7 +20,7 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
-    "@factor/loader": "^1.0.0",
+    "@factor/extend-build": "^1.0.0",
     "@factor/plugin-server-dev": "^1.0.0",
     "@factor/plugin-webpack": "^1.0.0",
     "find-node-modules": "^2.0.0",

@@ -7,7 +7,7 @@
     "target": "build"
   },
   "dependencies": {
-    "@factor/extend": "^1.0.0",
+    "@factor/extend-app": "^1.0.0",
     "vuex-router-sync": "^5.0.0",
     "qs": "^6.6.0",
     "vue": "^2.6.7",

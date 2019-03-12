@@ -7,7 +7,7 @@ import Factor from "vue"
 
 // // Config
 // import config from "~/config"
-import extender from "@factor/extend"
+import extend from "@factor/extend-app"
 
 // // Router + Store
 import { createStore } from "./store"
@@ -45,7 +45,7 @@ export default () => {
   //console.log("loader", loader)
 
   // registerComponents(opts)
-  extender(Factor, { pkg: process.env.FACTOR_CONFIG }).extendApp()
+  extend(Factor, { pkg: process.env.FACTOR_CONFIG })
 
   const store = createStore()
 
