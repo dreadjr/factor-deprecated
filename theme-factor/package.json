@@ -1,0 +1,14 @@
+{
+  "name": "@factor/theme-factor", 
+  "version": "1.0.0", 
+  "main": "src/plugin.js", 
+  "license": "GPL-3.0",
+  "scripts": {
+    "dev": "NODE_ENV=development node config/start",
+    "start": "NODE_ENV=production node config/start --build --serve --no-cache"
+  },
+  "dependencies": { "@factor/core": "^1.0.0"
+  
+  
+  }
+}
