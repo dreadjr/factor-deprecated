@@ -11,8 +11,8 @@ export default (Factor, FACTOR_CONFIG) => {
       Factor.config.silent = false
 
       const core = {}
-      core.filters = require(`@factor/filters`)
-      core.config = require(`@factor/config`)
+      core.filters = require(`@factor/core-filters`)
+      core.config = require(`@factor/core-config`)
 
       Factor.use({
         install(Factor) {
@@ -22,6 +22,8 @@ export default (Factor, FACTOR_CONFIG) => {
           }
         }
       })
+
+      require(`@factor/core-app`)(Factor, { target: "app" })
 
       const plugins = require("@generated/load-plugins-app")
       this.injectPlugins(plugins)

@@ -127,9 +127,7 @@ export default Factor => {
       // If it runs twice it cleans it after the first
       const cleanDistPlugin = build == "production" && target == "server" ? { plugins: [new CleanWebpackPlugin()] } : {}
 
-      const merged = merge(baseConfig, buildConfig, targetConfig, testingConfig, analyzeConfig)
-
-      console.log("MERGED", merged, args)
+      const merged = merge(baseConfig, buildConfig, targetConfig, testingConfig, analyzeConfig, cleanDistPlugin)
 
       return merged
     }
@@ -225,7 +223,7 @@ export default Factor => {
             {
               test: /\.js$/,
               loader: "babel-loader",
-              options: Factor.$files.transpilerConfig("loader")
+              options: Factor.$files.transpilerConfig("webpack")
             },
             {
               test: /\.(png|jpg|gif|svg)$/,

@@ -11,11 +11,11 @@ module.exports = (Factor, FACTOR_CONFIG) => {
       Factor.config.silent = false
 
       const _ = {}
-      _.filters = require(`@factor/filters`)
-      _.paths = require(`@factor/paths`)
-      _.keys = require(`@factor/keys`)
-      _.files = require(`@factor/files`)
-      _.config = require(`@factor/config`)
+      _.filters = require(`@factor/core-filters`)
+      _.paths = require(`@factor/core-paths`)
+      _.keys = require(`@factor/core-keys`)
+      _.files = require(`@factor/core-files`)
+      _.config = require(`@factor/core-config`)
 
       Factor.use({
         install(Factor) {
@@ -25,6 +25,8 @@ module.exports = (Factor, FACTOR_CONFIG) => {
           }
         }
       })
+
+      require(`@factor/core-app`)(Factor, { target: "build" })
 
       const plugins = require(Factor.$paths.get("plugins-loader-build"))
       this.injectPlugins(plugins)

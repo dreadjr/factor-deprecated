@@ -3,5 +3,12 @@
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
-  "dependencies": {}
+  "dependencies": {
+    "@factor/core-app": "^1.0.0",
+    "@factor/core-config": "^1.0.0",
+    "@factor/core-files": "^1.0.0",
+    "@factor/core-keys": "^1.0.0",
+    "@factor/core-filters": "^1.0.0",
+    "@factor/core-paths": "^1.0.0"
+  }
 }
