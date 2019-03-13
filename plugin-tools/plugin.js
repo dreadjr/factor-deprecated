@@ -1,6 +1,7 @@
 import $ from "jquery"
 import _ from "lodash"
 import axios from "axios"
+import isNode from "detect-node"
 
 export default Factor => {
   return new class {
@@ -11,6 +12,8 @@ export default Factor => {
 
       // Request Utils
       Factor.$http = Factor.prototype.$http = axios
+
+      Factor.$isNode = isNode
     }
   }()
 }

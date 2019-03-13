@@ -15,9 +15,9 @@
     "@babel/preset-env": "^7.3.4",
     "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.3.4",
-    "@factor/plugin-server": "^1.0.0",
     "babel-plugin-dynamic-import-node": "^2.2.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "@factor/plugin-server": "^1.0.0"
   },
   "devDependencies": {
     "@factor/extend-build": "^1.0.0",

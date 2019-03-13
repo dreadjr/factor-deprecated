@@ -1,10 +1,8 @@
 {
-  "name": "@factor/plugin-events",
+  "name": "@factor/core-filters",
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
-  "factor": {
-    "priority": 20
-  },
+  "factor": { "priority": 10 },
   "dependencies": {}
 }
