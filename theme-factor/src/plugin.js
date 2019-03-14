@@ -21,7 +21,7 @@ export default Factor => {
           {
             path: "/docs",
             component: () => import("./page-docs"),
-            meta: { nav: true }
+            meta: { nav: true, background: "#f3f5fa" }
           }
         ]
 

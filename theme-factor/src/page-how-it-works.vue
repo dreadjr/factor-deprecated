@@ -1,7 +1,7 @@
 <template>
   <div class="how-it-works">
-    <section class="mast">
-      <div class="splash">
+    <section class="splash-wrap">
+      <div class="splash mast">
         <div>
           <h1 class="title">How Factor Works</h1>
           <p class="subtitle">At vero eos et accusamus et iusto odio dignissimos ducimus.</p>
@@ -9,12 +9,13 @@
       </div>
     </section>
 
-    <section class="mast">
-      <div class="items-wrap">
+    <section class="items-wrap stripes-wrap">
+      <div class="stripes" />
+      <div class="mast">
         <div class="item">
           <div>
-            <el-svg icon="fast-clock" background="rgba(4, 149, 254, 0.2)" />
-            <h2 class="title">Fast Setup</h2>
+            <el-svg icon="fast-clock" />
+            <h2 class="title">5 Minute Setup</h2>
             <p>Get started in minutes. sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
             <div class="actions">
               <el-link path="/docs">
@@ -26,9 +27,7 @@
           <div>
             <strong>Install with NPM</strong>
             <pre>
-              <code class="language-css">
-                npm install @factor
-              </code>
+              <code class="language-html">npm install @factor</code>
             </pre>
             <strong>Install with YARN</strong>
             <pre>
@@ -40,7 +39,7 @@
         </div>
         <div class="item">
           <div>
-            <el-svg icon="puzzle" color="#F32DA9" background="rgba(243, 45, 169, 0.2)" />
+            <el-svg icon="puzzle" />
             <h2 class="title">Modular</h2>
             <p>Get started in minutes. sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
             <div class="actions">
@@ -51,7 +50,7 @@
             </div>
           </div>
           <div>
-            <div class="stripes-bg">
+            <div class="circles-bg">
               <img
                 class="image-facing-right"
                 :src="require(`./img/modular.png`)"
@@ -62,7 +61,7 @@
         </div>
         <div class="item">
           <div>
-            <el-svg icon="fast-clock" background="rgba(4, 149, 254, 0.2)" />
+            <el-svg icon="vue" />
             <h2 class="title">Build with Vue.js</h2>
             <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
             <div class="actions">
@@ -73,7 +72,7 @@
             </div>
           </div>
           <div>
-            <div class="stripes-bg">
+            <div class="glow-bg">
               <img
                 class="image-facing-left"
                 :src="require(`./img/markdown-editor.png`)"
@@ -84,12 +83,12 @@
         </div>
         <div class="item">
           <div>
-            <el-svg icon="puzzle" color="#F32DA9" background="rgba(243, 45, 169, 0.2)" />
+            <el-svg icon="wrench" />
             <h2 class="title">Customizable</h2>
             <p>Include only what you need. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
           </div>
           <div>
-            <div class="stripes-bg">
+            <div class="triangles-bg">
               <img
                 class="image-facing-right"
                 :src="require(`./img/modular.png`)"
@@ -100,12 +99,12 @@
         </div>
         <div class="item">
           <div>
-            <el-svg icon="fast-clock" background="rgba(4, 149, 254, 0.2)" />
+            <el-svg icon="markdown" />
             <h2 class="title">Markdown Editor</h2>
             <p>The Markdown editor provides a great writing experience with simple formatting. It also saves time over hand-crafted HTML tags, and it’s faster than using a WYSIWYG.</p>
           </div>
           <div>
-            <div class="stripes-bg">
+            <div>
               <img
                 class="image-facing-left"
                 :src="require(`./img/markdown-editor.png`)"
@@ -116,12 +115,12 @@
         </div>
         <div class="item">
           <div>
-            <el-svg icon="puzzle" color="#F32DA9" background="rgba(243, 45, 169, 0.2)" />
+            <el-svg icon="user" />
             <h2 class="title">User Roles &amp; Permissions</h2>
             <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
           </div>
           <div>
-            <div class="stripes-bg">
+            <div>
               <img
                 class="image-facing-right"
                 :src="require(`./img/modular.png`)"
@@ -178,6 +177,29 @@ export default {
     max-width: 1000px;
     margin: 0 auto;
   }
+
+  .stripes-wrap {
+    position: relative;
+    .stripes {
+      position: absolute;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      transform: skewY(-5deg);
+      background: #fafbff;
+      background: linear-gradient(
+        0deg,
+        rgba(250, 251, 255, 1) 0%,
+        rgba(255, 255, 255, 1) 49%,
+        rgba(250, 251, 255, 1) 100%
+      );
+    }
+    .mast {
+      position: relative;
+    }
+  }
+
   .svg-wrap {
     display: inline-block;
     width: 50px;
@@ -185,10 +207,22 @@ export default {
     line-height: 50px;
     text-align: center;
     border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
     svg {
       padding: 2px;
       min-height: 50px;
+      max-width: 30px;
     }
+  }
+
+  .splash-wrap {
+    background: rgb(255, 255, 255);
+    background: linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(250, 251, 255, 1) 100%
+    );
   }
   .splash {
     padding: 7em 0;
@@ -211,6 +245,11 @@ export default {
         font-size: 1.2em;
       }
     }
+  }
+
+  .items-wrap {
+    padding: 4em 0;
+    margin: 3em 0;
   }
 
   .item {
@@ -238,7 +277,7 @@ export default {
     .title {
       font-size: 2em;
       line-height: 1;
-      margin: 0.3em 0;
+      margin: 0.5em 0;
       font-weight: 600;
     }
     p {
@@ -249,24 +288,44 @@ export default {
     .actions {
       margin-top: 1em;
       a {
-        font-size: 1.4em;
+        font-size: 1.2em;
       }
     }
 
-    .stripes-bg {
-      background: url(./img/stripes.svg) no-repeat center center;
+    .circles-bg {
+      background: url(./img/circles.svg) no-repeat center center;
+      background-size: contain;
+    }
+    .glow-bg {
+      background: url(./img/glow.svg) no-repeat center center;
+      background-size: contain;
+    }
+    .triangles-bg {
+      background: url(./img/triangles.svg) no-repeat center center;
+      background-size: contain;
+    }
+    .blue-lines-bg {
+      background: url(./img/lines.svg) no-repeat center center;
+      background-size: contain;
+    }
+    .pink-lines-bg {
+      background: url(./img/lines-pink.svg) no-repeat center center;
       background-size: contain;
     }
 
     img {
       max-width: 100%;
       &.image-facing-right {
-        transform: scale(1) perspective(2910px) rotateY(12deg) rotateX(3deg)
+        transform: scale(0.7) perspective(2910px) rotateY(12deg) rotateX(3deg)
           rotate(-2deg);
       }
       &.image-facing-left {
-        transform: scale(0.9) perspective(1040px) rotateY(-10deg) rotateX(2deg)
-          rotate(2deg);
+        border-radius: 14px;
+        box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.25),
+          0 18px 36px -18px rgba(0, 0, 0, 0.3),
+          0 -12px 36px -8px rgba(0, 0, 0, 0.025);
+        transform: scale(0.7) perspective(1040px) rotateY(-5deg) rotateX(1deg)
+          rotate(1deg);
       }
     }
   }

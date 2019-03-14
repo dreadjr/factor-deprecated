@@ -6,7 +6,7 @@
           <h3 class="title">Getting Started</h3>
           <ul class="list-items">
             <li>
-              <a href="#" class="active">Introduction</a>
+              <el-link href="#introduction" class="active">Introduction</el-link>
             </li>
             <li>
               <a href="#">Requirements</a>
@@ -28,7 +28,14 @@
             </li>
           </ul>
         </div>
-        <div class="content">Docs Content Goes Here</div>
+        <div class="content">
+          <h1>Documentation</h1>
+          <h2>Getting Started</h2>
+          <h3 id="introduction">Introduction</h3>
+          <p>Welcome to factor! Get familiar with the products and explore their features:</p>
+          <p>Factor is a modern CMS. In the documentation you will learn how to install it, how to use the interface and how to develop plugins and themes for the Factor platform.</p>
+          <p>Ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+        </div>
       </div>
     </section>
   </div>
@@ -64,6 +71,14 @@ export default {
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-column-gap: 2em;
+  }
+
+  .content {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04),
+      0 6px 14px 0 rgba(24, 32, 41, 0.06), 0 12px 34px 0 rgba(24, 32, 41, 0.04);
+    padding: 1em;
   }
 
   .sidebar {

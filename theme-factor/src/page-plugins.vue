@@ -14,8 +14,9 @@
         </div>
       </div>
     </section>
-    <section class="mast">
-      <div class="plugins-library">
+    <section class="plugins-wrap stripes-wrap">
+      <div class="stripes" />
+      <div class="mast plugins">
         <div class="sidebar">
           <h3 class="title">Categories</h3>
           <ul class="list-categories">
@@ -60,7 +61,23 @@
               <div class="item-top">
                 <img :src="require(`./img/paypal.jpg`)" alt="Paypal">
                 <div>
-                  <h3>Paypal</h3>
+                  <h3 class="title">Paypal</h3>
+                  <span class="category">Payment</span>
+                </div>
+              </div>
+              <p>Integrate the PayPal Checkout &amp; Subscriptions API</p>
+              <p class="downloads">
+                <i class="fa fa-download" /> 254 Downloads
+              </p>
+              <p class="author">
+                <i class="fa fa-user" /> by Fiction
+              </p>
+            </a>
+            <a href="#" class="item">
+              <div class="item-top">
+                <img :src="require(`./img/algolia.jpg`)" alt="Paypal">
+                <div>
+                  <h3 class="title">Algolia</h3>
                   <span class="category">Search</span>
                 </div>
               </div>
@@ -76,11 +93,11 @@
               <div class="item-top">
                 <img :src="require(`./img/paypal.jpg`)" alt="Paypal">
                 <div>
-                  <h3>Paypal</h3>
+                  <h3 class="title">Paypal</h3>
                   <span class="category">Search</span>
                 </div>
               </div>
-              <p>Enable blazing fast search for your project.</p>
+              <p>Integrate the PayPal Checkout &amp; Subscriptions API</p>
               <p class="downloads">
                 <i class="fa fa-download" /> 254 Downloads
               </p>
@@ -92,11 +109,11 @@
               <div class="item-top">
                 <img :src="require(`./img/paypal.jpg`)" alt="Paypal">
                 <div>
-                  <h3>Paypal</h3>
+                  <h3 class="title">Paypal</h3>
                   <span class="category">Search</span>
                 </div>
               </div>
-              <p>Enable blazing fast search for your project.</p>
+              <p>Integrate the PayPal Checkout &amp; Subscriptions API</p>
               <p class="downloads">
                 <i class="fa fa-download" /> 254 Downloads
               </p>
@@ -108,11 +125,11 @@
               <div class="item-top">
                 <img :src="require(`./img/paypal.jpg`)" alt="Paypal">
                 <div>
-                  <h3>Paypal</h3>
+                  <h3 class="title">Paypal</h3>
                   <span class="category">Search</span>
                 </div>
               </div>
-              <p>Enable blazing fast search for your project.</p>
+              <p>Integrate the PayPal Checkout &amp; Subscriptions API</p>
               <p class="downloads">
                 <i class="fa fa-download" /> 254 Downloads
               </p>
@@ -124,27 +141,11 @@
               <div class="item-top">
                 <img :src="require(`./img/paypal.jpg`)" alt="Paypal">
                 <div>
-                  <h3>Paypal</h3>
+                  <h3 class="title">Paypal</h3>
                   <span class="category">Search</span>
                 </div>
               </div>
-              <p>Enable blazing fast search for your project.</p>
-              <p class="downloads">
-                <i class="fa fa-download" /> 254 Downloads
-              </p>
-              <p class="author">
-                <i class="fa fa-user" /> by Fiction
-              </p>
-            </a>
-            <a href="#" class="item">
-              <div class="item-top">
-                <img :src="require(`./img/paypal.jpg`)" alt="Paypal">
-                <div>
-                  <h3>Paypal</h3>
-                  <span class="category">Search</span>
-                </div>
-              </div>
-              <p>Enable blazing fast search for your project.</p>
+              <p>Integrate the PayPal Checkout &amp; Subscriptions API</p>
               <p class="downloads">
                 <i class="fa fa-download" /> 254 Downloads
               </p>
@@ -153,6 +154,21 @@
               </p>
             </a>
           </div>
+        </div>
+      </div>
+    </section>
+    <section class="mast">
+      <div class="cta">
+        <div>
+          <h3 class="title">Ready to Start Building?</h3>
+          <p class="subtitle">Get in touch or create an account</p>
+        </div>
+        <div class="actions">
+          <el-link path="/download" btn="primary" size="large">
+            Download
+            <i class="fa fa-arrow-right" />
+          </el-link>
+          <el-link path="/contact" btn="tertiary" size="large">Contact Us</el-link>
         </div>
       </div>
     </section>
@@ -185,6 +201,21 @@ export default {
     max-width: 1000px;
     margin: 0 auto;
   }
+  .stripes-wrap {
+    position: relative;
+    .stripes {
+      position: absolute;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      transform: skewY(-5deg);
+      background: #fafbff;
+    }
+    .mast {
+      position: relative;
+    }
+  }
   .splash {
     padding: 7em 0;
     text-align: center;
@@ -213,14 +244,19 @@ export default {
       }
     }
   }
-  .plugins-library {
-    display: grid;
-    grid-template-columns: 1fr 5fr;
-    grid-column-gap: 2em;
-    @media (max-width: 767px) {
-      display: block;
+  .plugins-wrap {
+    padding: 6em 0;
+    margin: 0 0 4em;
+    .plugins {
+      display: grid;
+      grid-template-columns: 1fr 5fr;
+      grid-column-gap: 2em;
+      @media (max-width: 767px) {
+        display: block;
+      }
     }
   }
+
   .sidebar {
     .title {
       font-size: 1.4em;
@@ -276,6 +312,7 @@ export default {
       color: inherit;
       padding: 1em;
       margin-bottom: 1.5em;
+      background-color: #fff;
       border-radius: 4px;
       box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
         0 1px 3px rgba(0, 0, 0, 0.08);
@@ -288,6 +325,7 @@ export default {
       .item-top {
         display: flex;
         flex: 0 1 auto;
+        align-items: center;
         margin-bottom: 15px;
         img {
           width: 50px;
@@ -296,15 +334,48 @@ export default {
           margin-right: 15px;
           box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
             0 1px 3px rgba(0, 0, 0, 0.08);
-          img {
-            display: block;
-            max-width: 36px;
-          }
+        }
+        .title {
+          color: #0496ff;
         }
       }
       .downloads,
       .author {
-        margin-top: 1em;
+        margin-top: 0.7em;
+        opacity: 0.7;
+        font-size: 0.9em;
+        i {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+  .cta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 60px;
+    padding: 4em 0;
+    @media (max-width: 767px) {
+      display: block;
+    }
+    .title {
+      font-weight: 600;
+      font-size: 2em;
+      letter-spacing: -0.03em;
+      line-height: 0.9;
+      margin-bottom: 0.2em;
+    }
+    .subtitle {
+      opacity: 0.5;
+      font-size: 1.2em;
+      font-weight: 500;
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      @media (max-width: 767px) {
+        display: block;
+        margin-top: 1.5em;
       }
     }
   }
