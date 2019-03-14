@@ -15,6 +15,7 @@ export default Factor => {
         if (!uid) {
           this.removeAuth()
         }
+
         Factor.$events.$emit("auth-init", { uid })
         this.initialized = true
       })
@@ -29,7 +30,21 @@ export default Factor => {
     }
 
     uid() {
-      return this.$user.getUser().uid || false
+      return Factor.$user.getUser().uid || false
+    }
+
+    async authenticate(args) {
+      const { method, form = {}, newAccount = false } = args
+
+      const result = await Promise.all(Factor.$filters.apply("signin-promises", [], args))
+      const credentials = Factor.$lodash.flatten(result)[0]
+
+      if (credentials) {
+        const { uid } = credentials
+        this.update({ uid })
+      }
+
+      return credentials
     }
 
     async logout(args) {
@@ -40,6 +55,38 @@ export default Factor => {
 
     async removeAuth() {
       Factor.$events.$emit("auth-remove", { uid: this.uid() })
+    }
+
+    async addAuthMethod(args) {
+      const processors = Factor.$filters.apply("add-auth-method-promises", [], args)
+      const results = await Promise.all(processors)
+
+      this.update()
+
+      return results
+    }
+
+    async removeAuthMethod(args) {
+      const processors = Factor.$filters.apply("remove-auth-method-promises", [], args)
+      const results = await Promise.all(processors)
+
+      this.update()
+
+      return results
+    }
+
+    async sendPasswordReset(email) {
+      const promises = Factor.$filters.apply("send-password-reset", [], email)
+      return await Promise.all(promises)
+    }
+
+    async sendEmailVerification(email) {
+      const promises = Factor.$filters.apply("send-email-verification", [], email)
+      return await Promise.all(promises)
+    }
+
+    update(args) {
+      Factor.$events.$emit("user-updated", args)
     }
   }()
 }

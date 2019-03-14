@@ -14,6 +14,12 @@ export default Factor => {
       Factor.$http = Factor.prototype.$http = axios
 
       Factor.$isNode = isNode
+
+      Factor.$op = this.interop
+    }
+
+    interop(obj) {
+      return obj && obj.default ? obj.default : obj
     }
   }()
 }

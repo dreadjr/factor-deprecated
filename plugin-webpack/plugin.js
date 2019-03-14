@@ -140,6 +140,7 @@ export default Factor => {
           filename: "server-bundle.js",
           libraryTarget: "commonjs2"
         },
+        resolve: {},
         // https://webpack.js.org/configuration/externals/#externals
         // https://github.com/liady/webpack-node-externals
         externals: nodeExternals({
@@ -223,6 +224,7 @@ export default Factor => {
             {
               test: /\.js$/,
               loader: "babel-loader",
+
               options: Factor.$files.transpilerConfig("webpack")
             },
             {
@@ -256,9 +258,9 @@ export default Factor => {
         performance: {
           maxEntrypointSize: 600000
         },
-        // node: {
-        //   fs: "empty"
-        // },
+        node: {
+          fs: "empty"
+        },
         plugins: [
           new CopyWebpackPlugin([
             {

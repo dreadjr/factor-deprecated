@@ -23,6 +23,10 @@ export default Factor => {
       })
     }
 
+    config() {
+      return require("./config")
+    }
+
     events() {
       // Has to be after client load to avoid SSR conflicts
       Factor.$events.$on("app-mounted", () => {
@@ -84,6 +88,7 @@ export default Factor => {
     }
 
     async setActiveUser({ uid, from }) {
+      const uid = uid ? uid : this.getUser().uid
       const user = uid ? await this.requestActiveUser(uid) : {}
 
       this.storeUser({ user, from })
@@ -113,7 +118,9 @@ export default Factor => {
     }
 
     getCachedUser() {
-      return localStorage && localStorage[this.cacheKey] ? JSON.parse(localStorage[this.cacheKey]) : false
+      return localStorage && localStorage[this.cacheKey]
+        ? JSON.parse(localStorage[this.cacheKey])
+        : false
     }
 
     mixin() {

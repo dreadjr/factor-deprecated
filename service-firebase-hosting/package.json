@@ -5,5 +5,8 @@
   "license": "GPL-3.0",
   "factor": {
     "target": "app"
+  },
+  "dependencies": {
+    "@factor/service-firebase-app": "^1.0.0"
   }
 }

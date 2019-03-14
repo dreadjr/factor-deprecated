@@ -15,7 +15,7 @@ export default ({ target }) => {
   // Extend with plugins, happens before router and store so we can add hooks for them
   const loader = extendApp(Factor, process.env.FACTOR_CONFIG)
 
-  loader.registerComponents()
+  loader.initializeApp()
 
   const store = createStore({ target })
   const router = createRouter({ target })

@@ -8,15 +8,20 @@ module.exports = async FACTOR_CONFIG => {
 
   require("@factor/extend-build")(Factor, FACTOR_CONFIG)
 
+  const {
+    setup,
+    cli: { build }
+  } = FACTOR_CONFIG
+
   // User defined setup hook
   // The code that trigger this should be in the start.js in the app 'config' folder
-  if (typeof FACTOR_CONFIG.setup == "function") {
-    FACTOR_CONFIG.setup(Factor)
+  if (typeof setup == "function") {
+    setup(Factor)
   }
 
-  if (FACTOR_CONFIG.build) {
-    await Factor.$filters.get("build-production")
+  if (build) {
+    await Factor.$filters.apply("build-production")
   }
 
-  Factor.$filters.get("server", "")
+  Factor.$filters.apply("server")
 }

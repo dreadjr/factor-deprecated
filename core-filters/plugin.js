@@ -54,7 +54,9 @@ module.exports = Factor => {
           data = callback.apply(context, params)
 
           // Add into what is passed into next item
-          params[0] = data
+          if (data !== "undefined") {
+            params[0] = data
+          }
         }
       }
 

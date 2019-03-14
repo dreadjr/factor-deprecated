@@ -13,9 +13,10 @@ module.exports = (Factor, FACTOR_CONFIG) => {
       const _ = {}
       _.filters = require(`@factor/core-filters`)
       _.paths = require(`@factor/core-paths`)
+      _.config = require(`@factor/core-config`)
+
       _.keys = require(`@factor/core-keys`)
       _.files = require(`@factor/core-files`)
-      _.config = require(`@factor/core-config`)
 
       Factor.use({
         install(Factor) {
