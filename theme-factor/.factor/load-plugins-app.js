@@ -1,10 +1,10 @@
 /* GENERATED FILE */
 const files = {}
-files["tools"] = require("@factor/plugin-tools").default
-files["blog"] = require("@factor/plugin-blog").default
-files["componentsstandard"] = require("@factor/plugin-components-standard").default
 files["events"] = require("@factor/plugin-events").default
-files["firebase"] = require("@factor/plugin-firebase").default
+files["tools"] = require("@factor/plugin-tools").default
+files["auth"] = require("@factor/plugin-auth").default
+files["blog"] = require("@factor/plugin-blog").default
+files["db"] = require("@factor/plugin-db").default
 files["posts"] = require("@factor/plugin-posts").default
 files["time"] = require("@factor/plugin-time").default
 files["user"] = require("@factor/plugin-user").default

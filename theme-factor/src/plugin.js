@@ -1,7 +1,7 @@
 export default Factor => {
   return new class {
     constructor() {
-      Factor.$filters.add("routes", _ => {
+      Factor.$filters.add("content-routes", _ => {
         const contentRoutes = [
           {
             path: "/",
@@ -25,18 +25,7 @@ export default Factor => {
           }
         ]
 
-        const children = Factor.$filters.applyFilters("content-routes", contentRoutes)
-
-        _.push({
-          path: "/",
-          component: () => import("@/content"),
-          children,
-          meta: {
-            nav: false
-          }
-        })
-
-        return _
+        return _.concat(contentRoutes)
       })
     }
   }()
