@@ -111,7 +111,7 @@ module.exports = Factor => {
     }
 
     transpilerConfig(target) {
-      const modules = target == "webpack" ? false : "cjs"
+      const modules = "cjs"
 
       let plugins = [
         "@babel/plugin-transform-runtime",
@@ -129,7 +129,6 @@ module.exports = Factor => {
           // **not** compiled if `true` is returned.
           function(filepath) {
             const modulePath = filepath.includes("node_modules") ? filepath.split("node_modules").pop() : filepath
-
             return modulePath.includes("@factor") ? false : true
           }
         ],
@@ -205,7 +204,11 @@ module.exports = Factor => {
       //   packages = packages.concat(glob(themePluginPattern))
       // }
 
-      const pluginPackages = packages.filter(_ => _.includes("plugin"))
+      const {
+        factor: { services = [] }
+      } = Factor.$config
+
+      const pluginPackages = [...packages.filter(_ => _.includes("plugin")), ...Object.values(services)]
 
       const pluginsLoader = this.makeLoader(pluginPackages, { key: "plugin" })
 

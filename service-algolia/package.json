@@ -1,5 +1,5 @@
 {
-  "name": "@factor/service-firebase-firestore",
+  "name": "@factor/service-algolia",
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
@@ -7,6 +7,7 @@
     "target": "app"
   },
   "dependencies": {
-    "@factor/service-firebase-app": "^1.0.0"
+    "algoliasearch": "^3.24.5",
+    "algoliasearch-helper": "^2.22.0"
   }
 }

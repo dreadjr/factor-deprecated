@@ -47,15 +47,18 @@ export default (Factor, FACTOR_CONFIG) => {
       }
     }
 
-    registerComponents() {
-      const callbacks = Factor.$filters.get("register-components", {})
-      for (var _m in callbacks) {
-        if (callbacks[_m]) {
-          if (typeof callbacks[_m] == "function") {
-            callbacks[_m](this.opts)
-          }
+    _runCallbacks(callbacks) {
+      for (var key in callbacks) {
+        const cb = callbacks[key]
+        if (cb && typeof cb == "function") {
+          cb()
         }
       }
+    }
+
+    initializeApp() {
+      this._runCallbacks(Factor.$filters.get("initialize-app", {}))
+      this._runCallbacks(Factor.$filters.get("after-initialize-app", {}))
 
       const _components = Factor.$filters.get("components", {})
       for (var _c in _components) {

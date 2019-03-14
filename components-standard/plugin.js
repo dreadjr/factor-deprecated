@@ -5,7 +5,6 @@ export default Factor => {
     }
 
     registerComponents() {
-      console.log("REGISTER COMPONENTS")
       Factor.$filters.add("components", _ => {
         _["el-link"] = () => import("./el/link")
         _["el-btn"] = () => import("./el/btn")

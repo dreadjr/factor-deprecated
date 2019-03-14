@@ -5,5 +5,8 @@
   "license": "GPL-3.0",
   "factor": {
     "target": "app"
+  },
+  "dependencies": {
+    "firebase": "^5.8.6"
   }
 }
