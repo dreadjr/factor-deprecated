@@ -105,7 +105,7 @@ export default {
   .mast {
     padding: 0 2em;
     line-height: 1.2;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
   }
 
@@ -119,12 +119,10 @@ export default {
       top: 0;
       transform: skewY(-5deg);
       background: #fafbff;
-      background: linear-gradient(
-        0deg,
-        rgba(250, 251, 255, 1) 0%,
-        rgba(255, 255, 255, 1) 49%,
-        rgba(250, 251, 255, 1) 100%
-      );
+      background: linear-gradient(90deg, #fff, #fafbff, #fafbff, #fafbff, #fff);
+      @media (max-width: 767px) {
+        background: #fafbff;
+      }
     }
     .mast {
       position: relative;
@@ -133,20 +131,14 @@ export default {
 
   .splash-wrap {
     background: rgb(255, 255, 255);
-    background: linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(250, 251, 255, 1) 100%
-    );
   }
   .splash {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 60px;
-    padding: 7em 0;
+    padding: 7em 2em;
     @media (max-width: 767px) {
-      display: block;
-      padding: 4em 0;
+      grid-template-columns: 1fr;
     }
     .title {
       font-weight: 600;
@@ -177,6 +169,7 @@ export default {
       border-radius: 6px;
       border: 1px solid rgba(0, 0, 0, 0.05);
       padding: 10px;
+      background: #fff;
       // box-shadow: 1px 1px 5px 0 rgba(26, 26, 67, 0.05),
       //   39px 62.5px 125px -25px rgba(50, 50, 93, 0.5),
       //   23.4px 37.5px 75px -37.5px rgba(0, 0, 0, 0.6);
@@ -184,6 +177,8 @@ export default {
         0 18px 36px -18px rgba(0, 0, 0, 0.3),
         23.4px 37.5px 75px -37.5px rgba(0, 0, 0, 0.4);
       @media (max-width: 767px) {
+        max-width: inherit;
+        margin-top: 3em;
         transform: scale(1) translateX(0) translateY(0) perspective(0)
           rotateY(0deg) rotateX(0deg) rotate(0deg);
         box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.25),

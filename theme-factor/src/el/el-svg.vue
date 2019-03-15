@@ -1,5 +1,5 @@
 <template>
-  <span class="svg-wrap" :style="{ backgroundColor: background}">
+  <figure class="svg-wrap" :style="{ backgroundColor: background}">
     <template v-if="icon == 'server'">
       <svg width="28" height="23" viewBox="0 0 28 23" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -182,7 +182,7 @@
         />
       </svg>
     </template>
-  </span>
+  </figure>
 </template>
 <script>
 export default {

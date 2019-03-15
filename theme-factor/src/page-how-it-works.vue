@@ -16,7 +16,7 @@
           <div>
             <el-svg icon="fast-clock" />
             <h2 class="title">5 Minute Setup</h2>
-            <p>Get started in minutes. sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
+            <p>Get started in 5 minutes. sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
             <div class="actions">
               <el-link path="/docs">
                 Start Now
@@ -41,7 +41,7 @@
           <div>
             <el-svg icon="puzzle" />
             <h2 class="title">Modular</h2>
-            <p>Get started in minutes. sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
+            <p>Customize your project by including only the code you need. Using Factor means avoiding code bloat, reusable elements, and faster development.</p>
             <div class="actions">
               <el-link path="/plugins">
                 Get Plugins
@@ -51,11 +51,7 @@
           </div>
           <div>
             <div class="circles-bg">
-              <img
-                class="image-facing-right"
-                :src="require(`./img/modular.png`)"
-                alt="Factor - Modular"
-              >
+              <img class="img-modular" :src="require(`./img/modular.png`)" alt="Factor - Modular">
             </div>
           </div>
         </div>
@@ -73,27 +69,16 @@
           </div>
           <div>
             <div class="glow-bg">
-              <img
-                class="image-facing-left"
-                :src="require(`./img/markdown-editor.png`)"
-                alt="Factor - Modular"
-              >
-            </div>
-          </div>
-        </div>
-        <div class="item">
-          <div>
-            <el-svg icon="wrench" />
-            <h2 class="title">Customizable</h2>
-            <p>Include only what you need. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
-          </div>
-          <div>
-            <div class="triangles-bg">
-              <img
-                class="image-facing-right"
-                :src="require(`./img/modular.png`)"
-                alt="Factor - Modular"
-              >
+              <pre>
+                <code class="javascript">
+                    var app = new Factor({
+                      el: '#app',
+                      data: {
+                        message: 'Hello Factor!'
+                      }
+                    })
+                </code>
+              </pre>
             </div>
           </div>
         </div>
@@ -104,11 +89,11 @@
             <p>The Markdown editor provides a great writing experience with simple formatting. It also saves time over hand-crafted HTML tags, and it’s faster than using a WYSIWYG.</p>
           </div>
           <div>
-            <div>
+            <div class="swirl-bg">
               <img
-                class="image-facing-left"
+                class="img-markdown"
                 :src="require(`./img/markdown-editor.png`)"
-                alt="Factor - Modular"
+                alt="Factor - Markdown"
               >
             </div>
           </div>
@@ -117,14 +102,14 @@
           <div>
             <el-svg icon="user" />
             <h2 class="title">User Roles &amp; Permissions</h2>
-            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+            <p>You can invite other users to access your site dashboard. To protect your sensitive information or restrict the actions they can perform, user roles limit their access. Each user is assigned a role when they are added.</p>
           </div>
           <div>
-            <div>
+            <div class="dashed-circles-bg">
               <img
-                class="image-facing-right"
-                :src="require(`./img/modular.png`)"
-                alt="Factor - Modular"
+                class="img-user-roles"
+                :src="require(`./img/user-roles.png`)"
+                alt="Factor - User Roles and Permissions"
               >
             </div>
           </div>
@@ -171,10 +156,15 @@ export default {
 </script>
 <style lang="less">
 .how-it-works {
+  //Temporary
+  pre {
+    white-space: pre-wrap;
+  }
+  //Standard
   .mast {
     padding: 0 2em;
     line-height: 1.2;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
   }
 
@@ -188,12 +178,7 @@ export default {
       top: 0;
       transform: skewY(-5deg);
       background: #fafbff;
-      background: linear-gradient(
-        0deg,
-        rgba(250, 251, 255, 1) 0%,
-        rgba(255, 255, 255, 1) 49%,
-        rgba(250, 251, 255, 1) 100%
-      );
+      background: linear-gradient(90deg, #fff, #fafbff, #fafbff, #fafbff, #fff);
     }
     .mast {
       position: relative;
@@ -217,18 +202,13 @@ export default {
   }
 
   .splash-wrap {
-    background: rgb(255, 255, 255);
-    background: linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(250, 251, 255, 1) 100%
-    );
+    background: #fff;
   }
   .splash {
     padding: 7em 0;
     text-align: center;
     @media (max-width: 767px) {
-      padding: 4em 0;
+      padding: 4em 1em;
     }
     .title {
       font-weight: 600;
@@ -239,7 +219,7 @@ export default {
     }
     .subtitle {
       opacity: 0.5;
-      font-size: 1.5em;
+      font-size: 1.4em;
       font-weight: 500;
       @media (max-width: 767px) {
         font-size: 1.2em;
@@ -261,7 +241,7 @@ export default {
 
     @media (max-width: 767px) {
       grid-template-columns: 1fr;
-      grid-gap: 0;
+      grid-gap: 2em;
       padding: 2em 1em;
     }
 
@@ -281,14 +261,14 @@ export default {
       font-weight: 600;
     }
     p {
-      font-size: 1.2em;
-      line-height: 1.4em;
+      font-size: 1.4em;
+      line-height: 1.6em;
       opacity: 0.5;
     }
     .actions {
       margin-top: 1em;
       a {
-        font-size: 1.2em;
+        font-size: 1.4em;
       }
     }
 
@@ -300,8 +280,12 @@ export default {
       background: url(./img/glow.svg) no-repeat center center;
       background-size: contain;
     }
-    .triangles-bg {
-      background: url(./img/triangles.svg) no-repeat center center;
+    .dashed-circles-bg {
+      background: url(./img/dashed-circles.svg) no-repeat center center;
+      background-size: contain;
+    }
+    .swirl-bg {
+      background: url(./img/swirl.svg) no-repeat center center;
       background-size: contain;
     }
     .blue-lines-bg {
@@ -315,15 +299,22 @@ export default {
 
     img {
       max-width: 100%;
-      &.image-facing-right {
+      &.img-modular {
         transform: scale(0.7) perspective(2910px) rotateY(12deg) rotateX(3deg)
           rotate(-2deg);
       }
-      &.image-facing-left {
+      &.img-markdown {
         border-radius: 14px;
-        box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.25),
-          0 18px 36px -18px rgba(0, 0, 0, 0.3),
-          0 -12px 36px -8px rgba(0, 0, 0, 0.025);
+        box-shadow: -27.1px 62.5px 125px -25px rgba(80, 102, 119, 0.5),
+          -16.2px 37.5px 75px -37.5px rgba(0, 0, 0, 0.6);
+        transform: scale(0.7) perspective(2910px) rotateY(12deg) rotateX(3deg)
+          rotate(-2deg);
+      }
+      &.img-user-roles {
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 27.1px 62.5px 125px -25px rgba(80, 102, 119, 0.5),
+          16.2px 37.5px 75px -37.5px rgba(0, 0, 0, 0.6);
         transform: scale(0.7) perspective(1040px) rotateY(-5deg) rotateX(1deg)
           rotate(1deg);
       }
@@ -347,7 +338,7 @@ export default {
     }
     .subtitle {
       opacity: 0.5;
-      font-size: 1.2em;
+      font-size: 1.4em;
       font-weight: 500;
     }
     .actions {
