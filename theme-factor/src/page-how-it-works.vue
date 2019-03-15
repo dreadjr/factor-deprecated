@@ -18,10 +18,10 @@
             <h2 class="title">5 Minute Setup</h2>
             <p>Get started in 5 minutes. sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
             <div class="actions">
-              <el-link path="/docs">
+              <factor-link path="/docs">
                 Start Now
                 <i class="fa fa-arrow-right" />
-              </el-link>
+              </factor-link>
             </div>
           </div>
           <div>
@@ -43,10 +43,10 @@
             <h2 class="title">Modular</h2>
             <p>Customize your project by including only the code you need. Using Factor means avoiding code bloat, reusable elements, and faster development.</p>
             <div class="actions">
-              <el-link path="/plugins">
+              <factor-link path="/plugins">
                 Get Plugins
                 <i class="fa fa-arrow-right" />
-              </el-link>
+              </factor-link>
             </div>
           </div>
           <div>
@@ -61,10 +61,10 @@
             <h2 class="title">Build with Vue.js</h2>
             <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
             <div class="actions">
-              <el-link path="/docs">
+              <factor-link path="/docs">
                 Explore the docs
                 <i class="fa fa-arrow-right" />
-              </el-link>
+              </factor-link>
             </div>
           </div>
           <div>
@@ -123,11 +123,11 @@
           <p class="subtitle">Get in touch or create an account</p>
         </div>
         <div class="actions">
-          <el-link path="/download" btn="primary" size="large">
+          <factor-link path="/download" btn="primary" size="large">
             Download
             <i class="fa fa-arrow-right" />
-          </el-link>
-          <el-link path="/contact" btn="tertiary" size="large">Contact Us</el-link>
+          </factor-link>
+          <factor-link path="/contact" btn="tertiary" size="large">Contact Us</factor-link>
         </div>
       </div>
     </section>

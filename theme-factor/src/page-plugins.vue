@@ -6,10 +6,10 @@
           <h1 class="title">Plugins</h1>
           <p class="subtitle">Extend your project features and do more with Factor.</p>
           <div class="actions">
-            <el-link path="/docs" btn="primary" size="large">
+            <factor-link path="/docs" btn="primary" size="large">
               How to Install
               <i class="fa fa-arrow-right" />
-            </el-link>
+            </factor-link>
           </div>
         </div>
       </div>
@@ -164,11 +164,11 @@
           <p class="subtitle">Get in touch or create an account</p>
         </div>
         <div class="actions">
-          <el-link path="/download" btn="primary" size="large">
+          <factor-link path="/download" btn="primary" size="large">
             Download
             <i class="fa fa-arrow-right" />
-          </el-link>
-          <el-link path="/contact" btn="tertiary" size="large">Contact Us</el-link>
+          </factor-link>
+          <factor-link path="/contact" btn="tertiary" size="large">Contact Us</factor-link>
         </div>
       </div>
     </section>

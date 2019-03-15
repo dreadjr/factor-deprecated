@@ -6,10 +6,10 @@
           <h1 class="title">The New Standard in CMS</h1>
           <p class="subtitle">Factor helps developers build sites faster with vue.js.</p>
           <div class="actions">
-            <el-link path="/download" btn="secondary" size="large">
+            <factor-link path="/download" btn="secondary" size="large">
               Download Factor
               <i class="fa fa-arrow-right" />
-            </el-link>
+            </factor-link>
           </div>
         </div>
         <div>
@@ -55,10 +55,10 @@
           </div>
         </div>
         <div class="actions">
-          <el-link path="/how-it-works">
+          <factor-link path="/how-it-works">
             See how it works
             <i class="fa fa-arrow-right" />
-          </el-link>
+          </factor-link>
         </div>
       </div>
     </section>
@@ -69,11 +69,11 @@
           <p class="subtitle">Get in touch or create an account</p>
         </div>
         <div class="actions">
-          <el-link path="/download" btn="primary" size="large">
+          <factor-link path="/download" btn="primary" size="large">
             Download
             <i class="fa fa-arrow-right" />
-          </el-link>
-          <el-link path="/contact" btn="tertiary" size="large">Contact Us</el-link>
+          </factor-link>
+          <factor-link path="/contact" btn="tertiary" size="large">Contact Us</factor-link>
         </div>
       </div>
     </section>
