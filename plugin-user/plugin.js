@@ -88,7 +88,7 @@ export default Factor => {
     }
 
     async setActiveUser({ uid, from }) {
-      const uid = uid ? uid : this.getUser().uid
+      uid = uid ? uid : this.getUser().uid
       const user = uid ? await this.requestActiveUser(uid) : {}
 
       this.storeUser({ user, from })

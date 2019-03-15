@@ -128,7 +128,9 @@ module.exports = Factor => {
         ignore: [
           // **not** compiled if `true` is returned.
           function(filepath) {
-            const modulePath = filepath.includes("node_modules") ? filepath.split("node_modules").pop() : filepath
+            const modulePath = filepath.includes("node_modules")
+              ? filepath.split("node_modules").pop()
+              : filepath
             return modulePath.includes("@factor") ? false : true
           }
         ],
@@ -204,11 +206,12 @@ module.exports = Factor => {
       //   packages = packages.concat(glob(themePluginPattern))
       // }
 
-      const {
-        factor: { services = [] }
-      } = Factor.$config
+      const { factor: { services = {} } = {} } = Factor.$config
 
-      const pluginPackages = [...packages.filter(_ => _.includes("plugin")), ...Object.values(services)]
+      const pluginPackages = [
+        ...packages.filter(_ => _.includes("plugin")),
+        ...Object.values(services)
+      ]
 
       const pluginsLoader = this.makeLoader(pluginPackages, { key: "plugin" })
 
@@ -236,7 +239,13 @@ module.exports = Factor => {
         if (_.includes("package.json")) {
           const { name, factor: { priority = 100, target = "app" } = {} } = require(_)
 
-          fields = { ...fields, module: name, priority, target, id: name.split(key)[1].replace(/\-/g, "") }
+          fields = {
+            ...fields,
+            module: name,
+            priority,
+            target,
+            id: name.split(key)[1].replace(/\-/g, "")
+          }
         } else {
           const basename = path.basename(_)
           const folderName = path.basename(path.dirname(_))

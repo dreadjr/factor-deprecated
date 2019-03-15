@@ -15,7 +15,7 @@ module.exports = FactorAdmin => {
 
       const privs = await this.tools.getExistingClaims(uid)
 
-      const roles = require(`@factor/plugin-user`).default(Factor)
+      const roles = require(`@factor/plugin-user`).default(Factor).config().roles
 
       let newClaims = { accessLevel: 1 }
 
