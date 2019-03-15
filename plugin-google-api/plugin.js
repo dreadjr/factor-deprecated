@@ -26,6 +26,12 @@ export default Factor => {
     }
 
     listeners() {
+      Factor.$filters.add("auth-provider-tokens", ({ provider }) => {
+        if (provider.includes("google")) {
+          return this.getToken()
+        }
+      })
+
       Factor.$events.$on("logout", () => {
         this.logout()
       })
@@ -60,6 +66,13 @@ export default Factor => {
           })
         }
       })
+    }
+    async getToken() {
+      const googleAuth = await this.login()
+      const idToken = googleAuth.Zi.id_token
+      const accessToken = googleAuth.Zi.access_token
+
+      return { idToken, accessToken }
     }
 
     async login() {

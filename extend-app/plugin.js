@@ -69,7 +69,7 @@ export default (Factor, FACTOR_CONFIG, target) => {
 
       if (target == "client") {
         const directives = Factor.$filters.apply("client-directives", {})
-        console.log("DIREC", directives)
+
         for (var _ in directives) {
           if (directives[_]) {
             Factor.directive(_, directives[_])

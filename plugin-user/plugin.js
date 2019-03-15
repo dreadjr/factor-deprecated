@@ -99,15 +99,16 @@ export default Factor => {
 
       if (!uid) return {}
 
-      const publicData = await Factor.$db.query({
-        table: "public",
+      const publicData = await Factor.$db.read({
+        collection: "public",
         id: uid
       })
 
-      const privateData = await Factor.$db.query({
-        table: "private",
+      const privateData = await Factor.$db.read({
+        collection: "private",
         id: uid
       })
+
       return { uid, ...publicData, ...privateData }
     }
 

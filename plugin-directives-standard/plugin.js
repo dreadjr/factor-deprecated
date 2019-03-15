@@ -3,7 +3,6 @@ export default Factor => {
     constructor() {
       const that = this
 
-      console.log("LOAD DIRS")
       Factor.$filters.add("client-directives", _ => {
         _["formatted-text"] = function(el, binding) {
           el.innerHTML = that.sanitizeHtml(binding.value)

@@ -184,11 +184,13 @@ export default {
         }
         this.loading = method
 
-        const credentials = await this.$user.authenticate({
-          method,
+        const credentials = await this.$auth.authenticate({
+          provider: method,
           form: this.form,
           newAccount: this.newAccount
         })
+
+        console.log("CRED", credentials)
 
         if (credentials) {
           const { user } = credentials

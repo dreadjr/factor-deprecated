@@ -29,7 +29,40 @@ module.exports = Factor => {
 
       str = str.substring(0, 500)
 
-      return str.split("").reduce((prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0, 0)
+      return str
+        .split("")
+        .reduce((prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0, 0)
+    }
+
+    async service({ service, filter, args }) {
+      const added = this.apply(filter, [], args)
+
+      console.log("ADDED", added)
+
+      if (added.length == 0) {
+        console.warn(`[Factor] No [${filter}] handler added in [${service}] service`)
+        return null
+      }
+
+      const results = await Promise.all(added)
+
+      return Factor.$lodash.flatten(results)[0]
+    }
+
+    // Services should always be an array of promises
+    // This function allows a simple async function to be added as an arg
+    // then it turns it into the array format needed
+    addService(args) {
+      let { name, service, options } = args
+
+      this.add(
+        name,
+        (_, filterArgs) => {
+          _.push(service(filterArgs))
+          return _
+        },
+        options
+      )
     }
 
     // Apply filters a maximum of one time, once they've run add to _applied property
