@@ -50,7 +50,7 @@
             </div>
           </div>
           <div>
-            <div class="circles-bg">
+            <div class="bg-circles">
               <img class="img-modular" :src="require(`./img/modular.png`)" alt="Factor - Modular">
             </div>
           </div>
@@ -68,7 +68,7 @@
             </div>
           </div>
           <div>
-            <div class="glow-bg">
+            <div class="bg-glow">
               <pre>
                 <code class="javascript">
                     var app = new Factor({
@@ -89,7 +89,7 @@
             <p>The Markdown editor provides a great writing experience with simple formatting. It also saves time over hand-crafted HTML tags, and it’s faster than using a WYSIWYG.</p>
           </div>
           <div>
-            <div class="swirl-bg">
+            <div class="bg-glow">
               <img
                 class="img-markdown"
                 :src="require(`./img/markdown-editor.png`)"
@@ -105,7 +105,7 @@
             <p>You can invite other users to access your site dashboard. To protect your sensitive information or restrict the actions they can perform, user roles limit their access. Each user is assigned a role when they are added.</p>
           </div>
           <div>
-            <div class="dashed-circles-bg">
+            <div class="bg-dashed-circles">
               <img
                 class="img-user-roles"
                 :src="require(`./img/user-roles.png`)"
@@ -272,28 +272,20 @@ export default {
       }
     }
 
-    .circles-bg {
-      background: url(./img/circles.svg) no-repeat center center;
+    .bg-circles {
+      background: url(./img/bg-circles.svg) no-repeat center center;
       background-size: contain;
     }
-    .glow-bg {
-      background: url(./img/glow.svg) no-repeat center center;
+    .bg-glow {
+      background: url(./img/bg-glow.svg) no-repeat center center;
       background-size: contain;
     }
-    .dashed-circles-bg {
-      background: url(./img/dashed-circles.svg) no-repeat center center;
+    .bg-dashed-circles {
+      background: url(./img/bg-dashed-circles.svg) no-repeat center center;
       background-size: contain;
     }
-    .swirl-bg {
-      background: url(./img/swirl.svg) no-repeat center center;
-      background-size: contain;
-    }
-    .blue-lines-bg {
-      background: url(./img/lines.svg) no-repeat center center;
-      background-size: contain;
-    }
-    .pink-lines-bg {
-      background: url(./img/lines-pink.svg) no-repeat center center;
+    .bg-swirl {
+      background: url(./img/bg-swirl.svg) no-repeat center center;
       background-size: contain;
     }
 
@@ -315,7 +307,7 @@ export default {
         background: #fff;
         box-shadow: 27.1px 62.5px 125px -25px rgba(80, 102, 119, 0.5),
           16.2px 37.5px 75px -37.5px rgba(0, 0, 0, 0.6);
-        transform: scale(0.7) perspective(1040px) rotateY(-5deg) rotateX(1deg)
+        transform: scale(0.6) perspective(1040px) rotateY(-5deg) rotateX(1deg)
           rotate(1deg);
       }
     }

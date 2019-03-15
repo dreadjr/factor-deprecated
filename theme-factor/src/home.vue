@@ -4,7 +4,7 @@
       <div class="splash mast">
         <div>
           <h1 class="title">The New Standard in CMS</h1>
-          <p class="subtitle">Factor helps developers build sites faster with vue.js.</p>
+          <p class="subtitle">Factor is the best system for managing content in the modern era.</p>
           <div class="actions">
             <factor-link path="/download" btn="secondary" size="large">
               Download Factor
@@ -12,8 +12,14 @@
             </factor-link>
           </div>
         </div>
-        <div>
-          <div class="splash-image">Any image or content can go here</div>
+        <div class="splash-image">
+          <div class="bg-swirl">
+            <img
+              class="img-modular"
+              :src="require(`./img/screenshot-dashboard.png`)"
+              alt="Factor - Dashboard"
+            >
+          </div>
         </div>
       </div>
     </section>
@@ -21,7 +27,7 @@
       <div class="stripes" />
       <div class="mast">
         <h2 class="title">Why Factor?</h2>
-        <p class="subtitle">At vero eos et accusamus et iusto odio dignissimos ducimus.</p>
+        <p class="subtitle">Factor helps developers build sites faster with Vue.js.</p>
         <div class="boxes">
           <div class="box">
             <el-svg icon="server" />
@@ -31,7 +37,7 @@
           <div class="box">
             <el-svg icon="js" />
             <h2>100% JavaScript</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
+            <p>One language to rule them all. Use JavaScript everywhere: both for your front-end and your Headless CMS.</p>
           </div>
           <div class="box">
             <el-svg icon="npm" />
@@ -130,13 +136,14 @@ export default {
   }
 
   .splash-wrap {
-    background: rgb(255, 255, 255);
+    background: #fff;
   }
   .splash {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 60px;
-    padding: 7em 2em;
+    align-items: center;
+    padding: 1em 2em;
     @media (max-width: 767px) {
       grid-template-columns: 1fr;
     }
@@ -149,7 +156,7 @@ export default {
     }
     .subtitle {
       opacity: 0.5;
-      font-size: 1.5em;
+      font-size: 1.4em;
       font-weight: 500;
       @media (max-width: 767px) {
         font-size: 1.2em;
@@ -162,33 +169,31 @@ export default {
       }
     }
     .splash-image {
-      min-height: 220px;
-      max-width: 350px;
-      transform: scale(1.2) translateX(50px) translateY(0) perspective(3190px)
-        rotateY(-29deg) rotateX(4deg) rotate(1deg);
-      border-radius: 6px;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      padding: 10px;
-      background: #fff;
-      // box-shadow: 1px 1px 5px 0 rgba(26, 26, 67, 0.05),
-      //   39px 62.5px 125px -25px rgba(50, 50, 93, 0.5),
-      //   23.4px 37.5px 75px -37.5px rgba(0, 0, 0, 0.6);
-      box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.25),
-        0 18px 36px -18px rgba(0, 0, 0, 0.3),
-        23.4px 37.5px 75px -37.5px rgba(0, 0, 0, 0.4);
-      @media (max-width: 767px) {
-        max-width: inherit;
-        margin-top: 3em;
-        transform: scale(1) translateX(0) translateY(0) perspective(0)
-          rotateY(0deg) rotateX(0deg) rotate(0deg);
+      z-index: 10;
+      img {
+        max-width: 100%;
+        border-radius: 14px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        background: #fff;
         box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.25),
-          0 18px 36px -18px rgba(0, 0, 0, 0.3);
+          0 18px 36px -18px rgba(0, 0, 0, 0.3),
+          23.4px 37.5px 75px -37.5px rgba(0, 0, 0, 0.4);
+        transform: scale(0.8) perspective(1040px) rotateY(-5deg) rotateX(1deg)
+          rotate(1deg);
+        @media (max-width: 767px) {
+          transform: scale(1) perspective(0) rotateY(0deg) rotateX(0deg)
+            rotate(0deg);
+        }
       }
+    }
+    .bg-swirl {
+      background: url(./img/bg-swirl.svg) no-repeat center center;
+      background-size: contain;
     }
   }
   .boxes-wrap {
     padding: 4em 0;
-    margin: 3em 0;
+    margin: 0 0 3em;
     .title {
       font-weight: 600;
       font-size: 2.4em;
