@@ -27,7 +27,7 @@ export default {
     // this.$jquery(this.$el).remove()
     // document.querySelector("#app").append(this.$el)
 
-    this.$events.$on("progressBar", action => {
+    this.$events.$on("ssr-progress", action => {
       this[action]()
     })
   },

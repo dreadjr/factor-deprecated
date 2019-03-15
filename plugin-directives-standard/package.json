@@ -1,0 +1,12 @@
+{
+  "name": "@factor/plugin-directives-standard",
+  "version": "1.0.0",
+  "main": "plugin.js",
+  "license": "GPL-3.0",
+  "factor": {
+    "target": "all"
+  },
+  "dependencies": {
+    "sanitize-html": "^1.20.0"
+  }
+}

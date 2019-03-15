@@ -1,13 +1,16 @@
 <template>
   <div id="app" class="factor-app">
     <router-view />
-    <site-progress-bar />
+    <component :is="component" v-for="(component, k) in injectedComponents" :key="k" />
   </div>
 </template>
 <script>
 export default {
-  components: {
-    "site-progress-bar": () => import("./site-progress-bar")
+
+  computed: {
+    injectedComponents(){
+      return this.$filters.apply('site-components')
+    }
   }
 }
 </script>

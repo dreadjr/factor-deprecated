@@ -8,7 +8,11 @@
           </span>
           <div class="modal-text">
             <div class="modal-text-content">
-              <el-header :title="title" :sub-title="sub" />
+              <div class="modal-header">
+                <h3 class="title">{{ title }}</h3>
+                <div class="sub-title">{{ sub }}</div>
+              </div>
+              
               <slot />
             </div>
           </div>
@@ -32,7 +36,7 @@ export default {
     },
     vis: function(v) {
       this.handleCloseEvents(v)
-      this.$hook.$emit("modal", v)
+      this.$events.$emit("modal", v)
     }
   },
   mounted: function() {

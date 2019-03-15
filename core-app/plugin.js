@@ -24,8 +24,9 @@ module.exports = (Factor, { target }) => {
       this.routes()
     }
 
-    async components() {
+    components() {
       require("@factor/components-standard").default(Factor)
+      require("@factor/components-form").default(Factor)
     }
 
     routes() {

@@ -10,17 +10,17 @@
       <div class="btns">
         <div v-if="imgList.length !== 1" class="btn__prev" @click="prev">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-prev"/>
+            <use xlink:href="#icon-prev" />
           </svg>
         </div>
         <div v-if="imgList.length !== 1" class="btn__next" @click="next">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-next"/>
+            <use xlink:href="#icon-next" />
           </svg>
         </div>
         <div class="btn__close" @click="closeDialog">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-close"/>
+            <use xlink:href="#icon-close" />
           </svg>
         </div>
       </div>
@@ -91,7 +91,7 @@ export default {
         this.init()
       }
 
-      this.$hook.$emit("modal", visible)
+      this.$events.$emit("modal", visible)
     }
   },
   mounted() {

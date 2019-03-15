@@ -6,7 +6,7 @@ export default {
     size: { type: String, default: "" },
     disabled: { type: Boolean, default: false },
     path: { type: String, default: "" },
-    action: { type: String, default: "" },
+    event: { type: String, default: "" },
     query: { type: Object, default: () => {} },
     loading: { type: Boolean, default: false }
   },
@@ -25,7 +25,7 @@ export default {
 
     path = !path && query ? this.$route.path : path
 
-    if (path.startsWith("http") || this.action) {
+    if (path.startsWith("http") || this.event) {
       el = "a"
       attrs = { href: path }
       props = []
@@ -39,7 +39,7 @@ export default {
 
     let classes = {}
 
-    classes["el-link"] = true
+    classes["factor-link"] = true
 
     if (this.pg) {
       classes[`link-${this.pg}`] = true
@@ -49,7 +49,7 @@ export default {
       classes[`is-btn`] = true
 
       text = createElement(
-        "el-btn",
+        "factor-btn",
         {
           props: {
             btn: this.btn,
@@ -73,13 +73,13 @@ export default {
       classes["active-path"] = true
     }
 
-    let on = this.action
+    let on = this.event
       ? {
           click: e => {
             e.preventDefault()
             //e.stopPropagation()
 
-            this.$hook.$emit(this.action, query)
+            this.$events.$emit(this.event, query)
 
             return false
           }
@@ -103,7 +103,7 @@ export default {
 </script>
 
 <style lang="less">
-.el-link {
+.factor-link {
   &.disabled {
     cursor: not-allowed;
     pointer-events: none; // Future-proof disabling of clicks

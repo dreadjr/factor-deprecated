@@ -5,8 +5,7 @@ export default Factor => {
     constructor() {
       const firebaseApp = require("@factor/service-firebase-app").default
       require("firebase/auth")
-      // console.log("do auth", require("firebase/auth"))
-      // Factor.$interop()
+
       this.client = firebaseApp(Factor).client
 
       Factor.$filters.add("after-initialize-app", () => {
@@ -22,7 +21,9 @@ export default Factor => {
       if (!Factor.$isNode) {
         try {
           this.client.auth().onAuthStateChanged(async serviceUser => {
-            Factor.$events.$emit("auth-state-changed", { uid: serviceUser ? serviceUser.uid : null })
+            Factor.$events.$emit("auth-state-changed", {
+              uid: serviceUser ? serviceUser.uid : null
+            })
           })
         } catch (error) {
           this.error(error)
@@ -31,34 +32,42 @@ export default Factor => {
     }
 
     async linkProvider(provider, token = {}) {
-      if (provider.includes("facebook")) {
-        await this.linkFacebook(token) // will get token if unset
-      } else if (provider.includes("google")) {
-        await this.linkGoogle(token) // will get token if unset
-      } else if (provider.includes("email")) {
-        await this.emailVerification()
+      if (provider.includes("email")) {
+        await this.sendEmailVerification()
+      } else {
+        const tokens = await Factor.$filters.apply("auth-link-provider-tokens", { provider, token })
+        const { idToken, accessToken } = tokens
+
+        let credential
+        if (provider.includes("facebook")) {
+          credential = this.client.auth.FacebookAuthProvider.credential(accessToken)
+        } else if (provider.includes("google")) {
+          credential = this.client.auth.GoogleAuthProvider.credential(idToken, accessToken)
+        }
+
+        await this.client.auth().currentUser.linkAndRetrieveDataWithCredential(credential)
       }
 
       return
     }
 
-    async _googleCredential(token) {
-      if (!token.idToken || !token.accessToken) {
-        const googleAuth = await Factor.$google.login()
+    // async _googleCredential(token) {
+    //   if (!token.idToken || !token.accessToken) {
+    //     const googleAuth = await Factor.$google.login()
 
-        token.idToken = googleAuth.Zi.id_token
-        token.accessToken = googleAuth.Zi.access_token
-      }
+    //     token.idToken = googleAuth.Zi.id_token
+    //     token.accessToken = googleAuth.Zi.access_token
+    //   }
 
-      let credential = firebase.auth.GoogleAuthProvider.credential(token.idToken, token.accessToken)
-      return credential
-    }
+    //   let credential = firebase.auth.GoogleAuthProvider.credential(token.idToken, token.accessToken)
+    //   return credential
+    // }
 
-    async linkGoogle(token) {
-      const credential = await this._googleCredential(token)
-      const u = this.client.auth().currentUser
-      await u.linkAndRetrieveDataWithCredential(credential)
-    }
+    // async linkGoogle(token) {
+    //   const credential = await this._googleCredential(token)
+    //   const u = this.client.auth().currentUser
+    //   await u.linkAndRetrieveDataWithCredential(credential)
+    // }
 
     async unlinkProvider(provider) {
       return await firebase.auth().currentUser.unlink(provider)
@@ -66,7 +75,7 @@ export default Factor => {
 
     async setCustomClaims(uid) {
       const result = await Factor.$endpoint.request({
-        endpoint: "user",
+        endpoint: "@factor/service-firebase-auth-endpoint",
         action: "customClaims",
         uid
       })
@@ -117,14 +126,14 @@ export default Factor => {
 
       if (email && email !== _.email) {
         await _.updateEmail(email)
-        this.emailVerification() // ASYNC
+        this.sendEmailVerification() // ASYNC
       }
 
       return currentUser
     }
 
-    async emailVerification() {
-      return await this.client.auth().currentUser.sendEmailVerification()
+    async sendEmailVerification() {
+      return await this.client.auth().currentUser.sendsendEmailVerification()
     }
 
     async emailPasswordReset({ email }) {

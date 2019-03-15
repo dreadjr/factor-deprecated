@@ -1,4 +1,4 @@
-export default (Factor, FACTOR_CONFIG) => {
+export default (Factor, FACTOR_CONFIG, target) => {
   return new class {
     constructor() {
       Factor.$pkg = FACTOR_CONFIG
@@ -60,10 +60,20 @@ export default (Factor, FACTOR_CONFIG) => {
       this._runCallbacks(Factor.$filters.get("initialize-app", {}))
       this._runCallbacks(Factor.$filters.get("after-initialize-app", {}))
 
-      const _components = Factor.$filters.get("components", {})
-      for (var _c in _components) {
-        if (_components[_c]) {
-          Factor.component(_c, _components[_c])
+      const comps = Factor.$filters.get("components", {})
+      for (var _ in comps) {
+        if (comps[_]) {
+          Factor.component(_, comps[_])
+        }
+      }
+
+      if (target == "client") {
+        const directives = Factor.$filters.apply("client-directives", {})
+        console.log("DIREC", directives)
+        for (var _ in directives) {
+          if (directives[_]) {
+            Factor.directive(_, directives[_])
+          }
         }
       }
     }

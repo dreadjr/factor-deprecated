@@ -35,7 +35,7 @@ export default Factor => {
         cache: new LRU({ max: 1000, maxAge: 1000 * 60 * 15 }),
         runInNewContext: false,
         // basedir: this.resolve("./")
-        directives: Factor.$filters.applyFilters("ssr-directives", {})
+        directives: Factor.$filters.applyFilters("server-directives", {})
       })
 
       // "formatted-text"(vnode, directiveMeta) {
@@ -101,7 +101,11 @@ export default Factor => {
             this.renderer = this.createRenderer(bundle, options)
           })
         } else {
-          consola.error(new Error("No development server added. Add a development server to your app dependencies."))
+          consola.error(
+            new Error(
+              "No development server added. Add a development server to your app dependencies."
+            )
+          )
         }
       }
 
