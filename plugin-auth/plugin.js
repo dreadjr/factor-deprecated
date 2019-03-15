@@ -34,10 +34,14 @@ export default Factor => {
     }
 
     async authenticate(args) {
-      const { method, form = {}, newAccount = false } = args
+      const credentials = await Factor.$filters.service({
+        service: "auth",
+        filter: "signin",
+        args
+      })
 
-      const result = await Promise.all(Factor.$filters.apply("signin-promises", [], args))
-      const credentials = Factor.$lodash.flatten(result)[0]
+      // const result = await Promise.all(signinPromises)
+      // const credentials = Factor.$lodash.flatten(result)[0]
 
       if (credentials) {
         const { uid } = credentials

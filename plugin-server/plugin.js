@@ -25,8 +25,8 @@ export default Factor => {
       })
     }
 
-    resolve(file) {
-      return path.resolve(Factor.$config.baseDir, file)
+    resolve(dir, file) {
+      return path.resolve(dir, file)
     }
 
     createRenderer(bundle, options) {
@@ -37,12 +37,6 @@ export default Factor => {
         // basedir: this.resolve("./")
         directives: Factor.$filters.applyFilters("server-directives", {})
       })
-
-      // "formatted-text"(vnode, directiveMeta) {
-      //   const content = appUtils.cleanUserMessage(directiveMeta.value)
-      //   const domProps = vnode.data.domProps || (vnode.data.domProps = {})
-      //   domProps.innerHTML = content
-      // }
     }
 
     render(req, res) {
@@ -130,7 +124,7 @@ export default Factor => {
         const port = Factor.$config.port || 7000
 
         this.getListenRoutine(this.server).listen(port, () => {
-          const url = `${this.httpRoutine}://localhost:${port}`
+          const url = `${this.httpRoutine.routine}://localhost:${port}`
 
           consola.success(`Server @[${url}] - ${env}`)
 
@@ -142,15 +136,27 @@ export default Factor => {
     }
 
     getHttpRoutine() {
-      return fs.existsSync(this.resolve("./server.key")) ? "https" : "http"
+      let routine = "http"
+      let certDir = false
+      const filename = "server.key"
+
+      const filepath = require("find-up").sync(filename)
+
+      if (filepath) {
+        routine = "https"
+        certDir = path.dirname(filepath)
+      }
+
+      return { routine, certDir }
     }
 
     getListenRoutine(server) {
       let listenRoutine
-      if (this.httpRoutine == "https") {
+      const { routine, certDir } = this.httpRoutine
+      if (routine == "https") {
         var certOptions = {
-          key: fs.readFileSync(this.resolve("./server.key")),
-          cert: fs.readFileSync(this.resolve("./server.crt"))
+          key: fs.readFileSync(path.resolve(certDir, "server.key")),
+          cert: fs.readFileSync(path.resolve(certDir, "server.crt"))
         }
         listenRoutine = https.createServer(certOptions, server)
       } else {

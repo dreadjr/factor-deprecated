@@ -8,9 +8,13 @@ export default Factor => {
 
       this.client = firebaseApp(Factor).client
 
-      Factor.$filters.add("after-initialize-app", () => {
-        this.events()
-      })
+      if (!Factor.$isNode) {
+        Factor.$filters.add("after-initialize-app", () => {
+          this.events()
+        })
+
+        this.filters()
+      }
     }
 
     error(error) {
@@ -18,37 +22,60 @@ export default Factor => {
     }
 
     events() {
-      if (!Factor.$isNode) {
-        try {
-          this.client.auth().onAuthStateChanged(async serviceUser => {
-            Factor.$events.$emit("auth-state-changed", {
-              uid: serviceUser ? serviceUser.uid : null
-            })
+      try {
+        this.client.auth().onAuthStateChanged(async serviceUser => {
+          Factor.$events.$emit("auth-state-changed", {
+            uid: serviceUser ? serviceUser.uid : null
           })
-        } catch (error) {
-          this.error(error)
-        }
+        })
+      } catch (error) {
+        this.error(error)
       }
     }
 
-    async linkProvider(provider, token = {}) {
+    filters() {
+      Factor.$filters.addService({ name: "signin", service: _ => this.credentialSignin(_) })
+    }
+
+    async linkProvider(args) {
+      const { provider } = args
       if (provider.includes("email")) {
         await this.sendEmailVerification()
       } else {
-        const tokens = await Factor.$filters.apply("auth-link-provider-tokens", { provider, token })
-        const { idToken, accessToken } = tokens
-
-        let credential
-        if (provider.includes("facebook")) {
-          credential = this.client.auth.FacebookAuthProvider.credential(accessToken)
-        } else if (provider.includes("google")) {
-          credential = this.client.auth.GoogleAuthProvider.credential(idToken, accessToken)
-        }
+        const credential = await this.getProviderCredential(args)
 
         await this.client.auth().currentUser.linkAndRetrieveDataWithCredential(credential)
       }
 
       return
+    }
+
+    async credentialSignin(args) {
+      const credential = await this.getProviderCredential(args)
+
+      const userDetails = await this.client.auth().signInAndRetrieveDataWithCredential(credential)
+
+      Factor.$events.$emit("after-signin")
+
+      console.log("credential", credential, userDetails)
+
+      return userDetails
+    }
+
+    async getProviderCredential(args) {
+      console.log("GET PROVIDER", args)
+      const { provider = "" } = args
+      const tokens = await Factor.$filters.apply("auth-provider-tokens", args)
+      const { idToken, accessToken } = tokens
+
+      let credential
+      if (provider.includes("facebook")) {
+        credential = this.client.auth.FacebookAuthProvider.credential(accessToken)
+      } else if (provider.includes("google")) {
+        credential = this.client.auth.GoogleAuthProvider.credential(idToken, accessToken)
+      }
+
+      return credential
     }
 
     // async _googleCredential(token) {
@@ -70,7 +97,7 @@ export default Factor => {
     // }
 
     async unlinkProvider(provider) {
-      return await firebase.auth().currentUser.unlink(provider)
+      return await this.client.auth().currentUser.unlink(provider)
     }
 
     async setCustomClaims(uid) {
