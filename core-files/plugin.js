@@ -114,6 +114,7 @@ module.exports = Factor => {
       const modules = "cjs"
 
       let plugins = [
+        "@babel/plugin-transform-regenerator",
         "@babel/plugin-transform-runtime",
         "@babel/plugin-syntax-dynamic-import",
         "@babel/plugin-transform-modules-commonjs",
@@ -121,7 +122,7 @@ module.exports = Factor => {
       ]
 
       if (target == "build") {
-        plugins = plugins.concat(["@babel/plugin-transform-regenerator", "dynamic-import-node"])
+        plugins = plugins.concat(["dynamic-import-node"])
       }
 
       return {

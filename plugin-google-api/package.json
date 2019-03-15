@@ -1,9 +1,9 @@
 {
-  "name": "@factor/service-firebase-auth-endpoint",
+  "name": "@factor/plugin-google-api",
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
   "dependencies": {
-    "@factor/plugin-user": "^1.0.0"
+    "scriptjs": "^2.5.9"
   }
 }

@@ -8,7 +8,7 @@
       </span>
       <transition v-if="loading" name="fade">
         <div v-if="loading" class="waitload">
-          <el-loading-ring :class="circleClass" width="1.2em" />
+          <factor-loading-ring :class="circleClass" width="1.2em" />
         </div>
       </transition>
     </span>
@@ -37,7 +37,7 @@ export default {
       return this.btn == "test" && !this.$testing.isTest ? false : true
     },
     buttonClass() {
-      const btnClass = ["el-btn", "el-btn-load"]
+      const btnClass = ["factor-btn", "factor-btn-load"]
 
       if (this.loading) {
         btnClass.push("loading")
@@ -87,7 +87,7 @@ export default {
 </script>
 
 <style lang="less">
-.el-btn-load {
+.factor-btn-load {
   transition: 0.2s all;
   position: relative;
   overflow: hidden;
@@ -122,7 +122,7 @@ export default {
     transform: translateX(-50%);
   }
 }
-.el-btn {
+.factor-btn {
   display: inline-block;
   margin-bottom: 0; // For input.btn
   user-select: none;
@@ -217,12 +217,12 @@ export default {
         0 0 0 0 transparent;
     }
   }
-  + .el-btn,
+  + .factor-btn,
   + .is-btn {
     margin-left: 0.5em;
   }
 }
-.is-btn + .el-btn,
+.is-btn + .factor-btn,
 .is-btn + .is-btn {
   margin-left: 0.5em;
 }

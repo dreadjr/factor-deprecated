@@ -1,10 +1,10 @@
 <template>
   <div class="content-layout">
     <div class="nav">Quick Nav:
-      <el-link path="/">Home</el-link>
-      <el-link path="/how-it-works">How it works</el-link>
-      <el-link path="/plugins">Plugins</el-link>
-      <el-link path="/docs">Docs</el-link>
+      <factor-link path="/">Home</factor-link>
+      <factor-link path="/how-it-works">How it works</factor-link>
+      <factor-link path="/plugins">Plugins</factor-link>
+      <factor-link path="/docs">Docs</factor-link>
     </div>
     <router-view />
   </div>
