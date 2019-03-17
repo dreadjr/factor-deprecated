@@ -68,8 +68,7 @@
             </div>
           </div>
           <div>
-            <div class="bg-glow">
-              <pre>
+            <pre>
                 <code class="javascript">
                     var app = new Factor({
                       el: '#app',
@@ -79,7 +78,6 @@
                     })
                 </code>
               </pre>
-            </div>
           </div>
         </div>
         <div class="item">
@@ -102,7 +100,7 @@
           <div>
             <el-svg icon="user" />
             <h2 class="title">User Roles &amp; Permissions</h2>
-            <p>You can invite other users to access your site dashboard. To protect your sensitive information or restrict the actions they can perform, user roles limit their access. Each user is assigned a role when they are added.</p>
+            <p>You can add other users to access your site dashboard. To protect your sensitive information or restrict the actions they can perform, user roles limit their access. Each user is assigned a role when they are added.</p>
           </div>
           <div>
             <div class="bg-dashed-circles">
@@ -178,7 +176,6 @@ export default {
       top: 0;
       transform: skewY(-5deg);
       background: #fafbff;
-      background: linear-gradient(90deg, #fff, #fafbff, #fafbff, #fafbff, #fff);
     }
     .mast {
       position: relative;

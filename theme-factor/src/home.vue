@@ -14,11 +14,7 @@
         </div>
         <div class="splash-image">
           <div class="bg-swirl">
-            <img
-              class="img-modular"
-              :src="require(`./img/screenshot-dashboard.png`)"
-              alt="Factor - Dashboard"
-            >
+            <img class="img-modular" :src="require(`./img/dashboard.svg`)" alt="Factor - Dashboard">
           </div>
         </div>
       </div>
@@ -124,8 +120,7 @@ export default {
       height: 100%;
       top: 0;
       transform: skewY(-5deg);
-      background: #fafbff;
-      background: linear-gradient(90deg, #fff, #fafbff, #fafbff, #fafbff, #fff);
+      background: #f6f9fc;
       @media (max-width: 767px) {
         background: #fafbff;
       }
