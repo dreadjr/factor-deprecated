@@ -1,6 +1,6 @@
 // This is the initialization file for the Factor framework.
 // Add any config customization to the object that is passed in to the function.
-const cli = require("yargs").argv
+const cli = { ...require("yargs").argv, cwd: process.cwd }
 const pkg = require("./package")
 
 // Add configuration options to the 'factor' key in package.json

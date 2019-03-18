@@ -165,6 +165,9 @@ export default {
     }
     .splash-image {
       z-index: 10;
+      @media (max-width: 767px) {
+        margin-top: 2em;
+      }
       img {
         max-width: 100%;
         border-radius: 14px;
@@ -184,6 +187,7 @@ export default {
     .bg-swirl {
       background: url(./img/bg-swirl.svg) no-repeat center center;
       background-size: contain;
+      transform: scale(1.1);
     }
   }
   .boxes-wrap {
@@ -224,7 +228,7 @@ export default {
     .box {
       margin: 2em 0;
       @media (max-width: 767px) {
-        margin: 1em 0;
+        margin: 1em 0 2em;
       }
       .svg-wrap {
         display: inline-block;

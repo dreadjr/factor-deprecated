@@ -31,7 +31,7 @@
             </pre>
             <strong>Install with YARN</strong>
             <pre>
-              <code class="language-css">
+              <code class="language-html">
                 yarn add @factor
               </code>
             </pre>
@@ -100,7 +100,7 @@
           <div>
             <el-svg icon="user" />
             <h2 class="title">User Roles &amp; Permissions</h2>
-            <p>You can add other users to access your site dashboard. To protect your sensitive information or restrict the actions they can perform, user roles limit their access. Each user is assigned a role when they are added.</p>
+            <p>You can add other users to access your site admin interface. To protect your sensitive information or restrict the actions they can perform, user roles limit their access. Each user is assigned a role when they are added.</p>
           </div>
           <div>
             <div class="bg-dashed-circles">
@@ -154,11 +154,6 @@ export default {
 </script>
 <style lang="less">
 .how-it-works {
-  //Temporary
-  pre {
-    white-space: pre-wrap;
-  }
-  //Standard
   .mast {
     padding: 0 2em;
     line-height: 1.2;
@@ -248,9 +243,6 @@ export default {
         direction: ltr;
       }
     }
-    // &:last-child {
-    //   padding-bottom: 0;
-    // }
     .title {
       font-size: 2em;
       line-height: 1;
@@ -306,6 +298,14 @@ export default {
           16.2px 37.5px 75px -37.5px rgba(0, 0, 0, 0.6);
         transform: scale(0.6) perspective(1040px) rotateY(-5deg) rotateX(1deg)
           rotate(1deg);
+      }
+      @media (max-width: 767px) {
+        &.img-modular,
+        &.img-markdown,
+        &.img-user-roles {
+          transform: scale(1) perspective(0) rotateY(0deg) rotateX(0deg)
+            rotate(0deg);
+        }
       }
     }
   }
