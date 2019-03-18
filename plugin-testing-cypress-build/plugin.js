@@ -2,13 +2,14 @@ export default Factor => {
   return new class {
     constructor() {
       this.key = "_cypress"
-      this.addBuildWatchers()
 
       this.cypressPath = require("find-up").sync("cypress")
 
-      if(!this.cypressPath){
+      if (!this.cypressPath) {
         return
       }
+
+      this.addBuildWatchers()
     }
 
     testsGlob() {
