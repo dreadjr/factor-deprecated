@@ -10,6 +10,11 @@ export default Factor => {
         name: "db-service-read",
         service: _ => this.read(_)
       })
+
+      Factor.$filters.addService({
+        name: "db-service-update",
+        service: _ => this.update(_)
+      })
     }
 
     async queryHandler(query) {
@@ -33,6 +38,16 @@ export default Factor => {
         .get()
 
       return this.refineQueryResults(doc)
+    }
+
+    async update({ id, collection, data }) {
+      await this.client
+        .firestore()
+        .collection(collection)
+        .doc(id)
+        .set(data, { merge: true })
+
+      return true
     }
 
     async doQueryRecursive(container, query) {
