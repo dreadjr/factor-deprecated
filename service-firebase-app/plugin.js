@@ -3,15 +3,13 @@ export default Factor => {
     constructor() {
       this.client = require("firebase/app").default
 
-      Factor.$events.$emit("firebase-load", this.client)
-
-      Factor.$filters.add(
-        "initialize-app",
-        _ => {
-          this.initialize()
-        },
-        { priority: 40 }
-      )
+      // Factor.$filters.add(
+      //   "initialize-app",
+      //   _ => {
+      //     this.initialize()
+      //   },
+      //   { priority: 40 }
+      // )
 
       this.initialize()
     }
@@ -23,7 +21,7 @@ export default Factor => {
           this.client.initializeApp(Factor.$config.firebase)
           Factor.$events.$emit("firebase-init", this.client)
         } catch (error) {
-          console.log("Error initializing Firebase", error)
+          console.error("Error initializing Firebase", error)
         }
       }
 

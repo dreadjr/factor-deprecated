@@ -37,8 +37,6 @@ module.exports = Factor => {
     async applyService({ service, filter, args }) {
       const added = this.apply(filter, [], args)
 
-      console.log("ADDED", added)
-
       if (added.length == 0) {
         console.warn(`[Factor] No [${filter}] handler added in [${service}] service`)
         return null

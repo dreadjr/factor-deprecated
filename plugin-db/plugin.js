@@ -13,13 +13,6 @@ export default Factor => {
       }
     }
 
-    async save(query) {
-      return this.query({
-        method: "save",
-        ...query
-      })
-    }
-
     async publish(query) {
       return this.query({
         method: "publish",
@@ -36,23 +29,26 @@ export default Factor => {
 
     async read(query) {
       return this.query({
-        method: "search",
+        method: "read",
         ...query
       })
     }
 
-    async query(query) {
-      const _promises = Object.keys(this.processors).map(key => {
-        const cb = this.processors[key]
-        return cb(query)
+    async update(query) {
+      return this.query({
+        method: "update",
+        ...query
       })
+    }
 
-      let result = await Promise.all(_promises)
-
-      result = result.filter(_ => _)
-
-      const entry = Factor.$lodash.flatten(result)[0]
-
+    async query(args) {
+      const { method } = args
+      const entry = await Factor.$filters.applyService({
+        service: "db",
+        filter: `db-service-${method}`,
+        args
+      })
+      console.log("do query", method)
       const { results = null } = entry || {}
 
       return results
@@ -66,7 +62,7 @@ export default Factor => {
         if (typeof obj[p] === "undefined") {
           delete obj[p]
         } else if (typeof obj[p] === "object") {
-          obj[p] = this.prepare(obj[p], mode)
+          obj[p] = this.prepare(obj[p])
         } else if (typeof obj[p] === "string") {
           obj[p] = obj[p].trim()
         }

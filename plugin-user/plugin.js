@@ -27,7 +27,7 @@ export default Factor => {
     }
 
     publicFields() {
-      return Factor.$filters("user-public-fields", this.config().publicFields)
+      return Factor.$filters.apply("user-public-fields", this.config().publicFields)
     }
 
     role() {
@@ -52,6 +52,8 @@ export default Factor => {
       Factor.$events.$on("auth-init", ({ uid }) => {
         this.setActiveUser({ uid, from: "auth" })
       })
+
+      Factor.$events.$on("auth-user-signed-in", ({ user }) => this.dbUserUpdate(user))
     }
 
     start() {
@@ -152,7 +154,7 @@ export default Factor => {
       })
 
       const userData = { uid, ...publicData, ...privateData }
-      console.log("userdata", userData)
+
       return userData
     }
 
@@ -172,15 +174,17 @@ export default Factor => {
       let userPublic = {}
       let userPrivate = Object.assign({}, allUserFields)
 
+      const publicFields = this.publicFields()
+
       // Get the fields that should be saved for public use
-      this.publicFields.forEach(i => {
+      publicFields.forEach(i => {
         if (allUserFields[i]) {
           userPublic[i] = allUserFields[i]
         }
       })
 
       // Remove everything we don't want saved as private info
-      this.publicFields.forEach(i => {
+      publicFields.forEach(i => {
         if (userPrivate[i]) {
           delete userPrivate[i]
         }
@@ -189,9 +193,11 @@ export default Factor => {
       return Factor.$db.prepare({ userPublic, userPrivate })
     }
 
-    async saveUser(user) {
+    // Updates the user private/public datastore
+    // Should merge provided data with existing
+    async dbUserUpdate(user) {
       const { uid } = user
-      const { userPublic, userPrivate } = this.buildUserSaveObject(user)
+      const { userPublic, userPrivate } = this.constructSaveObject(user)
 
       const savePublic = Factor.$db.update({ collection: "public", id: uid, data: userPublic })
       const savePrivate = Factor.$db.update({ collection: "private", id: uid, data: userPrivate })

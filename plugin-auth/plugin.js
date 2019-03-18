@@ -36,16 +36,12 @@ export default Factor => {
     async authenticate(args) {
       const credentials = await Factor.$filters.applyService({
         service: "auth",
-        filter: "signin",
+        filter: "auth-signin",
         args
       })
 
-      console.log("Credentials", credentials)
-
-      // const result = await Promise.all(signinPromises)
-      // const credentials = Factor.$lodash.flatten(result)[0]
-
       if (credentials) {
+        Factor.$events.$emit("auth-user-signed-in", credentials)
         const { uid } = credentials
         this.update({ uid })
       }

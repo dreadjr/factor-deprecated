@@ -57,10 +57,10 @@ export default (Factor, FACTOR_CONFIG, target) => {
     }
 
     initializeApp() {
-      this._runCallbacks(Factor.$filters.get("initialize-app", {}))
-      this._runCallbacks(Factor.$filters.get("after-initialize-app", {}))
+      this._runCallbacks(Factor.$filters.apply("initialize-app", {}))
+      this._runCallbacks(Factor.$filters.apply("after-initialize-app", {}))
 
-      const comps = Factor.$filters.get("components", {})
+      const comps = Factor.$filters.apply("components", {})
       for (var _ in comps) {
         if (comps[_]) {
           Factor.component(_, comps[_])

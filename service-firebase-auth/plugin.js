@@ -37,7 +37,7 @@ export default Factor => {
     }
 
     filters() {
-      Factor.$filters.addService({ name: "signin", service: _ => this.credentialSignin(_) })
+      Factor.$filters.addService({ name: "auth-signin", service: _ => this.credentialSignin(_) })
     }
 
     async linkProvider(args) {
@@ -56,11 +56,11 @@ export default Factor => {
     async credentialSignin(args) {
       const credential = await this.getProviderCredential(args)
 
-      const userDetails = await this.client.auth().signInAndRetrieveDataWithCredential(credential)
+      const firebaseUserCredential = await this.client
+        .auth()
+        .signInAndRetrieveDataWithCredential(credential)
 
-      Factor.$events.$emit("firebase-auth-signin")
-
-      return userDetails
+      return this.firebaseToFactorCredential(firebaseUserCredential)
     }
 
     async getProviderCredential(args) {
@@ -96,7 +96,24 @@ export default Factor => {
       return privs
     }
 
-    async cleanFirebaseUser(firebaseUser) {
+    async firebaseToFactorCredential(firebaseUserCredential) {
+      const {
+        additionalUserInfo: { isNewUser },
+        credential,
+        user
+      } = firebaseUserCredential
+
+      const factorUser = await this.firebaseToFactorUser(user)
+      return {
+        auth: {
+          isNewUser,
+          ...credential
+        },
+        user: factorUser
+      }
+    }
+
+    async firebaseToFactorUser(firebaseUser) {
       const basicFields = ["uid", "photoURL", "displayName", "email", "emailVerified"]
 
       let clean = {}
@@ -115,15 +132,15 @@ export default Factor => {
 
       // Firebase user object refinement
       if (firebaseUser.metadata) {
-        clean.createdAt = firebaseUser.metadata.creationTime
-        clean.signedInAt = firebaseUser.metadata.lastSignInTime
+        clean.createdAt = Factor.$time.stamp(firebaseUser.metadata.creationTime)
+        clean.signedInAt = Factor.$time.stamp(firebaseUser.metadata.lastSignInTime)
       }
 
       // Private Auth Information (current user)
       clean.auths = firebaseUser.auths || {}
 
       if (firebaseUser.providerData) {
-        firebaseUser.providerData.forEach((prov, num) => {
+        firebaseUser.providerData.forEach((prov, key) => {
           const provider = JSON.parse(JSON.stringify(prov))
           clean.auths[key] = provider // Ways to authenticate
           clean.serviceId[key] = provider.uid || true // Attached Services

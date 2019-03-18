@@ -164,7 +164,7 @@ export default {
         await this.$auth.sendPasswordResetEmail(this.form)
         this.passwordEmailSent = true
       } catch (error) {
-        this.$events.$emit('error', error)
+        this.$events.$emit("error", error)
       }
       this.loading = false
     },
@@ -190,12 +190,12 @@ export default {
           newAccount: this.newAccount
         })
 
-        console.log("CRED", credentials)
-
         if (credentials) {
           const { user } = credentials
 
-          this.$events.$emit('notify', { message: `Signed in as ${user.email}` })
+          this.$events.$emit("notify", {
+            message: `Signed in as ${user.email}`
+          })
 
           this.$emit("done", credentials)
 
@@ -204,7 +204,7 @@ export default {
           }
         }
       } catch (error) {
-        this.$events.$emit('error', error)
+        this.$events.$emit("error", error)
       }
 
       this.loading = false
@@ -218,7 +218,7 @@ export default {
   margin: 3em auto;
   width: 250px;
   text-align: center;
- 
+
   .alt-links {
     margin-top: 2em;
     text-align: center;
@@ -263,7 +263,7 @@ export default {
     margin: 1.5em 0;
   }
 
-  input{
+  input {
     margin: 0.5em 0;
   }
 
