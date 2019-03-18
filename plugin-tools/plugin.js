@@ -2,7 +2,7 @@ import $ from "jquery"
 import _ from "lodash"
 import axios from "axios"
 import isNode from "detect-node"
-
+import tools from "./utils"
 export default Factor => {
   return new class {
     constructor() {
@@ -16,6 +16,8 @@ export default Factor => {
       Factor.$isNode = isNode
 
       Factor.$op = this.interop
+
+      Factor.$tools = Factor.prototype.$tools = tools(Factor)
     }
 
     interop(obj) {

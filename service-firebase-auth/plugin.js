@@ -22,6 +22,9 @@ export default Factor => {
     }
 
     events() {
+      Factor.$events.$on("auth-remove", () => {
+        this.signOut()
+      })
       try {
         this.client.auth().onAuthStateChanged(async serviceUser => {
           Factor.$events.$emit("auth-state-changed", {
@@ -55,15 +58,12 @@ export default Factor => {
 
       const userDetails = await this.client.auth().signInAndRetrieveDataWithCredential(credential)
 
-      Factor.$events.$emit("after-signin")
-
-      console.log("credential", credential, userDetails)
+      Factor.$events.$emit("firebase-auth-signin")
 
       return userDetails
     }
 
     async getProviderCredential(args) {
-      console.log("GET PROVIDER", args)
       const { provider = "" } = args
       const tokens = await Factor.$filters.apply("auth-provider-tokens", args)
       const { idToken, accessToken } = tokens
@@ -78,23 +78,64 @@ export default Factor => {
       return credential
     }
 
-    // async _googleCredential(token) {
-    //   if (!token.idToken || !token.accessToken) {
-    //     const googleAuth = await Factor.$google.login()
+    async getUserPrivs(firebaseUser) {
+      const tokenResult = await firebaseUser.getIdTokenResult(true)
 
-    //     token.idToken = googleAuth.Zi.id_token
-    //     token.accessToken = googleAuth.Zi.access_token
-    //   }
+      const privs = {}
 
-    //   let credential = firebase.auth.GoogleAuthProvider.credential(token.idToken, token.accessToken)
-    //   return credential
-    // }
+      if (tokenResult && tokenResult.claims) {
+        const userRoles = Factor.$user.config().roles
+        const { claims } = tokenResult
+        Object.keys(userRoles).forEach(role => {
+          if (claims[role]) {
+            privs[role] = claims[role]
+          }
+        })
+      }
 
-    // async linkGoogle(token) {
-    //   const credential = await this._googleCredential(token)
-    //   const u = this.client.auth().currentUser
-    //   await u.linkAndRetrieveDataWithCredential(credential)
-    // }
+      return privs
+    }
+
+    async cleanFirebaseUser(firebaseUser) {
+      const basicFields = ["uid", "photoURL", "displayName", "email", "emailVerified"]
+
+      let clean = {}
+
+      basicFields.forEach(index => {
+        if (typeof firebaseUser[index] != "undefined") {
+          clean[index] = firebaseUser[index]
+        }
+      })
+
+      // Get user priviledges via custom claims
+      clean.privs = await this.getUserPrivs(firebaseUser)
+
+      // Public serviceId information
+      clean.serviceId = firebaseUser.serviceId || {}
+
+      // Firebase user object refinement
+      if (firebaseUser.metadata) {
+        clean.createdAt = firebaseUser.metadata.creationTime
+        clean.signedInAt = firebaseUser.metadata.lastSignInTime
+      }
+
+      // Private Auth Information (current user)
+      clean.auths = firebaseUser.auths || {}
+
+      if (firebaseUser.providerData) {
+        firebaseUser.providerData.forEach((prov, num) => {
+          const provider = JSON.parse(JSON.stringify(prov))
+          clean.auths[key] = provider // Ways to authenticate
+          clean.serviceId[key] = provider.uid || true // Attached Services
+        })
+      }
+
+      if (firebaseUser.emailVerified) {
+        clean.serviceId.email = firebaseUser.email
+      }
+
+      return clean
+    }
 
     async unlinkProvider(provider) {
       return await this.client.auth().currentUser.unlink(provider)
@@ -202,6 +243,10 @@ export default Factor => {
       Factor.$events.$emit("user-updated", { location: "verify phone" })
 
       return user
+    }
+
+    async signOut() {
+      await this.client.auth().signOut()
     }
   }()
 }

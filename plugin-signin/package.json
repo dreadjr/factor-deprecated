@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@factor/components-form": "^1.0.0",
-    "@factor/components-standard": "^1.0.0"
+    "@factor/components-standard": "^1.0.0",
+    "@factor/plugin-tools": "^1.0.0"
   }
 }

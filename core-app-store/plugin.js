@@ -14,7 +14,7 @@ export function createStore() {
     },
     mutations: {
       setItem: (state, { item, value }) => {
-        state[item] = value
+        Factor.set(state, item, value)
       }
     },
     actions: {},

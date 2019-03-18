@@ -34,11 +34,13 @@ export default Factor => {
     }
 
     async authenticate(args) {
-      const credentials = await Factor.$filters.service({
+      const credentials = await Factor.$filters.applyService({
         service: "auth",
         filter: "signin",
         args
       })
+
+      console.log("Credentials", credentials)
 
       // const result = await Promise.all(signinPromises)
       // const credentials = Factor.$lodash.flatten(result)[0]
@@ -51,13 +53,24 @@ export default Factor => {
       return credentials
     }
 
-    async logout(args) {
+    async logout(args = {}) {
+      console.log("[Auth] Logout", args)
       this.removeAuth()
 
-      Factor.$events.$emit("logout", { uid: this.uid(), ...args })
+      const path = args.redirect || "/"
+      if (args.redirect) {
+        Factor.$router.push({ path })
+      } else if (Factor.$router.currentRoute.meta.auth) {
+        Factor.$router.push({ path })
+      } else {
+        Factor.$events.$emit("reset-ui")
+      }
+
+      Factor.$events.$emit("auth-logout", { uid: this.uid(), ...args })
     }
 
     async removeAuth() {
+      Factor.$user.clearActiveUser()
       Factor.$events.$emit("auth-remove", { uid: this.uid() })
     }
 

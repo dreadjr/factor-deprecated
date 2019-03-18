@@ -12,11 +12,6 @@ export default Factor => {
     }
 
     filters() {
-      // Factor.$filters.addFilter("stores", _ => {
-      //   _.user = () => import("./store")
-      //   return _
-      // })
-
       Factor.$filters.addFilter("mixins", _ => {
         _.user = this.mixin()
         return _
@@ -25,6 +20,23 @@ export default Factor => {
 
     config() {
       return require("./config")
+    }
+
+    roles() {
+      return this.config().roles
+    }
+
+    publicFields() {
+      return Factor.$filters("user-public-fields", this.config().publicFields)
+    }
+
+    role() {
+      const user = this.getUser() || {}
+      const { role = {} } = user
+
+      return Object.keys(role).map(_ => {
+        return { title: _, level: role[_] }
+      })[0]
     }
 
     events() {
@@ -67,14 +79,38 @@ export default Factor => {
       return this.getUser().uid || false
     }
 
+    field(field) {
+      return this.getUser()[field] || ""
+    }
+
     getUser() {
       return Factor.$store.getters["getItem"]("activeUser") || {}
     }
 
+    async request(uid) {
+      let user
+      const storedValue = Factor.$store.getters["getItem"](uid) || false
+
+      if (storedValue) {
+        user = storedValue
+      } else {
+        user = await Vue.$db.read({
+          collection: "public",
+          id: uid
+        })
+
+        Factor.$store.commit("setItem", { item: uid, value: user })
+      }
+
+      return user
+    }
+
     storeUser({ user, from }) {
+      const { uid } = user
       // Don't set user and trigger all hooks if unneeded.
       if (from == "cache" || !Factor.$lodash.isEqual(this.getUser(), user)) {
-        Factor.$store.commit("user/setItem", { item: "activeUser", value: user })
+        Factor.$store.commit("setItem", { item: "activeUser", value: user })
+        Factor.$store.commit("setItem", { item: uid, value: user })
         this.setCacheUser(user)
         Factor.$events.$emit("user-set", user)
       }
@@ -85,6 +121,12 @@ export default Factor => {
         Factor.$events.$emit("user-init", { user, from })
         this.initialized = true
       }
+    }
+
+    clearActiveUser() {
+      const uid = this.uid()
+      Factor.$store.commit("setItem", { item: "activeUser", value: {} })
+      Factor.$store.commit("setItem", { item: uid, value: {} })
     }
 
     async setActiveUser({ uid, from }) {
@@ -109,7 +151,9 @@ export default Factor => {
         id: uid
       })
 
-      return { uid, ...publicData, ...privateData }
+      const userData = { uid, ...publicData, ...privateData }
+      console.log("userdata", userData)
+      return userData
     }
 
     setCacheUser(user) {
@@ -122,6 +166,41 @@ export default Factor => {
       return localStorage && localStorage[this.cacheKey]
         ? JSON.parse(localStorage[this.cacheKey])
         : false
+    }
+
+    constructSaveObject(allUserFields) {
+      let userPublic = {}
+      let userPrivate = Object.assign({}, allUserFields)
+
+      // Get the fields that should be saved for public use
+      this.publicFields.forEach(i => {
+        if (allUserFields[i]) {
+          userPublic[i] = allUserFields[i]
+        }
+      })
+
+      // Remove everything we don't want saved as private info
+      this.publicFields.forEach(i => {
+        if (userPrivate[i]) {
+          delete userPrivate[i]
+        }
+      })
+
+      return Factor.$db.prepare({ userPublic, userPrivate })
+    }
+
+    async saveUser(user) {
+      const { uid } = user
+      const { userPublic, userPrivate } = this.buildUserSaveObject(user)
+
+      const savePublic = Factor.$db.update({ collection: "public", id: uid, data: userPublic })
+      const savePrivate = Factor.$db.update({ collection: "private", id: uid, data: userPrivate })
+
+      await Promise.all([savePublic, savePrivate])
+
+      Factor.$events.$emit("user-saved", { uid })
+
+      return true
     }
 
     mixin() {

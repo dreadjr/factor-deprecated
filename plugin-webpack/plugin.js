@@ -155,7 +155,9 @@ module.exports.default = Factor => {
           filename: "server-bundle.js",
           libraryTarget: "commonjs2"
         },
-        resolve: {},
+        resolve: {
+          // mainFields: ["main", "module"]
+        },
         // https://webpack.js.org/configuration/externals/#externals
         // https://github.com/liady/webpack-node-externals
         externals: nodeExternals({

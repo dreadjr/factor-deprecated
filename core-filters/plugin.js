@@ -34,7 +34,7 @@ module.exports = Factor => {
         .reduce((prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0, 0)
     }
 
-    async service({ service, filter, args }) {
+    async applyService({ service, filter, args }) {
       const added = this.apply(filter, [], args)
 
       console.log("ADDED", added)

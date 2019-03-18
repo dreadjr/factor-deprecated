@@ -6,7 +6,7 @@
 <script>
 export default {
   components: {
-    "el-signin": () => import("./el-signin")
+    "el-signin": () => import("./signin")
   },
   metatags() {
     return {

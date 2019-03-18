@@ -57,5 +57,22 @@ export default Factor => {
 
       return results
     }
+
+    prepare(obj) {
+      // Convert abstract objects
+      obj = JSON.parse(JSON.stringify(obj))
+
+      for (var p in obj) {
+        if (typeof obj[p] === "undefined") {
+          delete obj[p]
+        } else if (typeof obj[p] === "object") {
+          obj[p] = this.prepare(obj[p], mode)
+        } else if (typeof obj[p] === "string") {
+          obj[p] = obj[p].trim()
+        }
+      }
+
+      return obj
+    }
   }()
 }

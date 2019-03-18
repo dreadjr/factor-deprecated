@@ -8,11 +8,9 @@
     "editor": 200,
     "author": 100,
     "member": 1,
-    "accessLevel": 1,
-    "accessTitle": "none",
-    "role": "none"
+    "visitor": 0
   },
-  "publicItems": [
+  "publicFields": [
     "uid",
     "avatar",
     "email",

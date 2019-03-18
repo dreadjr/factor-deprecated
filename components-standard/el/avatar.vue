@@ -1,6 +1,6 @@
 <template>
   <div class="avatar">
-    <loading-ring v-if="loading" :width="width" />
+    <factor-loading-ring v-if="loading" :width="width" />
     <div v-else-if="src" :style="getStyle({backgroundImage: `url(${src})`})" class="thumb" />
     <div v-else :style="getStyle()" class="thumb">
       <svg
@@ -40,7 +40,7 @@ export default {
       return this.uid && this.uid != "" ? this.uid : this.$uid
     },
     user() {
-      return this.$store.getters["user/getItem"](this.uuid) || {}
+      return this.$store.getters["getItem"](this.uuid) || {}
     },
     src() {
       return this.url
