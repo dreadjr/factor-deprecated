@@ -26,15 +26,9 @@
           </div>
           <div>
             <strong>Install with NPM</strong>
-            <pre>
-              <code class="language-html">npm install @factor</code>
-            </pre>
+            <pre><code class="language-html">npm install @factor</code></pre>
             <strong>Install with YARN</strong>
-            <pre>
-              <code class="language-html">
-                yarn add @factor
-              </code>
-            </pre>
+            <pre><code class="language-html">yarn add @factor</code></pre>
           </div>
         </div>
         <div class="item">
@@ -68,16 +62,14 @@
             </div>
           </div>
           <div>
-            <pre>
-                <code class="javascript">
-                    var app = new Factor({
-                      el: '#app',
-                      data: {
-                        message: 'Hello Factor!'
-                      }
-                    })
-                </code>
-              </pre>
+            <pre><code class="javascript">
+var app = new Factor({
+  el: '#app',
+  data: {
+    message: 'Hello Factor!'
+  }
+})
+          </code></pre>
           </div>
         </div>
         <div class="item">
@@ -190,6 +182,24 @@ export default {
       padding: 2px;
       min-height: 50px;
       max-width: 30px;
+    }
+  }
+
+  pre {
+    font-size: 0.8em;
+    background: #fff;
+    margin: 1em 0 2em;
+    border-radius: 4px;
+    border-left: 4px solid #506677;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    code {
+      overflow-x: auto;
+      color: #525252;
+      white-space: pre;
+      padding: 1.4em;
+      line-height: 1.5em;
+      font-size: 1em;
+      display: block;
     }
   }
 

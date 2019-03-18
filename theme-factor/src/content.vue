@@ -1,17 +1,35 @@
 <template>
   <div class="content-layout">
-    <div class="nav">Quick Nav:
+    <site-head v-if="nav">
       <factor-link path="/">Home</factor-link>
       <factor-link path="/how-it-works">How it works</factor-link>
       <factor-link path="/plugins">Plugins</factor-link>
       <factor-link path="/docs">Docs</factor-link>
-    </div>
+      <!-- <factor-link btn="primary">Download</factor-link> -->
+      <factor-link path="https://fiction.page.link/discord" target="_blank">
+        <i class="fa fa-discord" />
+      </factor-link>
+      <factor-link path="https://github.com/livefiction/factor" target="_blank">
+        <i class="fa fa-github" />
+      </factor-link>
+    </site-head>
     <router-view />
   </div>
 </template>
 <style src="./css/common.less" lang="less"></style>
 <script>
-export default {}
+export default {
+  components: {
+    "site-head": () => import("./site-head")
+  },
+  computed: {
+    nav() {
+      return typeof this.$route.meta.nav != "undefined"
+        ? this.$route.meta.nav
+        : true
+    }
+  }
+}
 </script>
 
 <style lang="less">
@@ -42,7 +60,6 @@ export default {}
       .content-footer {
         padding: 1em 1.5em;
         font-size: 0.85em;
-        //  background: rgba(38, 67, 89, 0.03);
         color: rgba(38, 67, 89, 0.2);
         text-align: center;
       }

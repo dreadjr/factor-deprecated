@@ -6,7 +6,7 @@
           <h3 class="title">Getting Started</h3>
           <ul class="list-items">
             <li>
-              <el-link href="#introduction" class="active">Introduction</el-link>
+              <factor-link href="#introduction" class="active">Introduction</factor-link>
             </li>
             <li>
               <a href="#">Requirements</a>

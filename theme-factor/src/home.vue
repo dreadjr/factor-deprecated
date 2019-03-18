@@ -6,9 +6,13 @@
           <h1 class="title">The New Standard in CMS</h1>
           <p class="subtitle">Factor is the best system for managing content in the modern era.</p>
           <div class="actions">
-            <factor-link path="/download" btn="secondary" size="large">
-              Download Factor
-              <i class="fa fa-arrow-right" />
+            <factor-link
+              path="https://github.com/livefiction/factor/archive/master.zip"
+              btn="secondary"
+              size="large"
+            >
+              Download v1.0.2
+              <i class="fa fa-arrow-down" />
             </factor-link>
           </div>
         </div>
@@ -23,7 +27,7 @@
       <div class="stripes" />
       <div class="mast">
         <h2 class="title">Why Factor?</h2>
-        <p class="subtitle">Factor helps developers build sites faster with Vue.js.</p>
+        <p class="subtitle">With Factor you can build sites faster using Vue.js.</p>
         <div class="boxes">
           <div class="box">
             <el-svg icon="server" />
@@ -33,7 +37,7 @@
           <div class="box">
             <el-svg icon="js" />
             <h2>100% JavaScript</h2>
-            <p>One language to rule them all. Use JavaScript everywhere: both for your front-end and your Headless CMS.</p>
+            <p>One language to rule them all. Lorem ipsum dolor sit amet.</p>
           </div>
           <div class="box">
             <el-svg icon="npm" />
@@ -41,13 +45,13 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
           </div>
           <div class="box">
-            <el-svg icon="infinite" />
-            <h2>Infinite Scalability</h2>
+            <el-svg icon="vue" />
+            <h2>Vue/Reactive Components</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
           </div>
           <div class="box">
-            <el-svg icon="vue" />
-            <h2>Vue/Reactive Components</h2>
+            <el-svg icon="infinite" />
+            <h2>Infinite Scalability</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
           </div>
           <div class="box">
@@ -73,7 +77,7 @@
         <div class="actions">
           <factor-link path="/download" btn="primary" size="large">
             Download
-            <i class="fa fa-arrow-right" />
+            <i class="fa fa-arrow-down" />
           </factor-link>
           <factor-link path="/contact" btn="tertiary" size="large">Contact Us</factor-link>
         </div>
@@ -138,16 +142,19 @@ export default {
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 60px;
     align-items: center;
-    padding: 1em 2em;
+    padding: 3em 2em;
     @media (max-width: 767px) {
       grid-template-columns: 1fr;
     }
     .title {
       font-weight: 600;
-      font-size: 3em;
+      font-size: 4em;
       letter-spacing: -0.03em;
       line-height: 0.9;
       margin-bottom: 0.2em;
+      @media (max-width: 767px) {
+        font-size: 2.7em;
+      }
     }
     .subtitle {
       opacity: 0.5;
@@ -167,6 +174,9 @@ export default {
       z-index: 10;
       @media (max-width: 767px) {
         margin-top: 2em;
+        padding: 0 1em;
+        display: flex;
+        justify-content: center;
       }
       img {
         max-width: 100%;
@@ -195,7 +205,7 @@ export default {
     margin: 0 0 3em;
     .title {
       font-weight: 600;
-      font-size: 2.4em;
+      font-size: 2.6em;
       letter-spacing: -0.03em;
       line-height: 1;
       margin-bottom: 0.2em;
@@ -213,6 +223,7 @@ export default {
     .actions {
       display: flex;
       justify-content: center;
+      margin-top: 1em;
       a {
         font-size: 1.2em;
       }
@@ -268,14 +279,14 @@ export default {
     }
     .title {
       font-weight: 600;
-      font-size: 2em;
+      font-size: 2.6em;
       letter-spacing: -0.03em;
       line-height: 0.9;
       margin-bottom: 0.2em;
     }
     .subtitle {
       opacity: 0.5;
-      font-size: 1.2em;
+      font-size: 1.4em;
       font-weight: 500;
     }
     .actions {
