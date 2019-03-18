@@ -5,6 +5,10 @@ export default Factor => {
       this.addBuildWatchers()
 
       this.cypressPath = require("find-up").sync("cypress")
+
+      if(!this.cypressPath){
+        return
+      }
     }
 
     testsGlob() {
