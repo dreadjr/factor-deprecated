@@ -54,11 +54,13 @@ module.exports = Factor => {
       if (!passwords) {
         try {
           passwords = require(passwordsFile)
-        } catch {}
+        } catch (error) {}
       }
 
       if (!passwords) {
-        consola.warn(`Didn't generate encrypted keys. No passwords @[${passwordsFile}] or Filter: 'master-password'`)
+        consola.warn(
+          `Didn't generate encrypted keys. No passwords @[${passwordsFile}] or Filter: 'master-password'`
+        )
         return
       }
 
@@ -74,13 +76,19 @@ module.exports = Factor => {
       const generated = []
       if (passwords.dev) {
         const encryptedDev = require("crypto-json").encrypt(rawKeys, passwords.dev)
-        fs.writeFileSync(Factor.$paths.get("keys-encrypted-dev"), JSON.stringify(encryptedDev, null, "  "))
+        fs.writeFileSync(
+          Factor.$paths.get("keys-encrypted-dev"),
+          JSON.stringify(encryptedDev, null, "  ")
+        )
         generated.push("dev")
       }
 
       if (passwords.prod) {
         const encryptedProd = require("crypto-json").encrypt(rawKeys, passwords.prod)
-        fs.writeFileSync(Factor.$paths.get("keys-encrypted-prod"), JSON.stringify(encryptedProd, null, "  "))
+        fs.writeFileSync(
+          Factor.$paths.get("keys-encrypted-prod"),
+          JSON.stringify(encryptedProd, null, "  ")
+        )
         generated.push("prod")
       }
 

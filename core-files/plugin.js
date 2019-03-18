@@ -209,10 +209,9 @@ module.exports = Factor => {
 
       const { factor: { services = {} } = {} } = Factor.$config
 
-      const pluginPackages = [
-        ...packages.filter(_ => _.includes("plugin")),
-        ...Object.values(services)
-      ]
+      let pluginPackages = []
+      pluginPackages = pluginPackages.concat(packages.filter(_ => _.includes("plugin")))
+      pluginPackages = pluginPackages.concat(Object.values(services))
 
       const pluginsLoader = this.makeLoader(pluginPackages, { key: "plugin" })
 
@@ -241,7 +240,6 @@ module.exports = Factor => {
           const { name, factor: { priority = 100, target = "app" } = {} } = require(_)
 
           fields = {
-            ...fields,
             module: name,
             priority,
             target,

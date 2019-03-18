@@ -3,7 +3,7 @@ module.exports = Factor => {
   let publicConfig = {}
   try {
     publicConfig = require("@config/keys-public.json")
-  } catch {
+  } catch (error) {
     consola.error(`Can't find public config file @[${this.keysPublic}]`)
   }
 

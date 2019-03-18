@@ -30,7 +30,7 @@ module.exports = Factor => {
 
     add(p, value) {
       if (typeof p == "object") {
-        this.paths = { ...this.paths, ...p }
+        this.paths = Object.assign({}, this.paths, p)
       } else {
         this.paths[p] = value
       }

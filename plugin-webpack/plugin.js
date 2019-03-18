@@ -18,9 +18,16 @@ const VueSSRServerPlugin = require("vue-server-renderer/server-plugin")
 
 const NODE_ENV = process.env.NODE_ENV
 
-export default Factor => {
+module.exports.default = Factor => {
   return new class {
     constructor() {
+      // Allow for running plugin outside of app (e.g. cypress)
+      if (Factor.$filters) {
+        this.addFilters()
+      }
+    }
+
+    addFilters() {
       Factor.$filters.add("build-production", () => {
         return this.buildProduction()
       })
@@ -125,9 +132,17 @@ export default Factor => {
 
       // Only run this once (server build)
       // If it runs twice it cleans it after the first
-      const cleanDistPlugin = build == "production" && target == "server" ? { plugins: [new CleanWebpackPlugin()] } : {}
+      const cleanDistPlugin =
+        build == "production" && target == "server" ? { plugins: [new CleanWebpackPlugin()] } : {}
 
-      const merged = merge(baseConfig, buildConfig, targetConfig, testingConfig, analyzeConfig, cleanDistPlugin)
+      const merged = merge(
+        baseConfig,
+        buildConfig,
+        targetConfig,
+        testingConfig,
+        analyzeConfig,
+        cleanDistPlugin
+      )
 
       return merged
     }
