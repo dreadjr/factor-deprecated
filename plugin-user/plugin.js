@@ -183,8 +183,9 @@ export default Factor => {
         }
       })
 
+      const noSaveFields = ["auths"]
       // Remove everything we don't want saved as private info
-      publicFields.forEach(i => {
+      publicFields.concat(noSaveFields).forEach(i => {
         if (userPrivate[i]) {
           delete userPrivate[i]
         }

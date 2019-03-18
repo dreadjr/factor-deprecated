@@ -48,7 +48,7 @@ export default Factor => {
         filter: `db-service-${method}`,
         args
       })
-      console.log("do query", method)
+
       const { results = null } = entry || {}
 
       return results
