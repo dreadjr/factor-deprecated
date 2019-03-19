@@ -1,5 +1,5 @@
 const path = require("path")
-
+var fs = require("fs")
 module.exports = Factor => {
   return new class {
     constructor() {
@@ -211,7 +211,7 @@ module.exports = Factor => {
 
       let pluginPackages = []
       pluginPackages = pluginPackages.concat(packages.filter(_ => _.includes("plugin")))
-      pluginPackages = pluginPackages.concat(Object.values(services))
+      pluginPackages = pluginPackages.concat(Object.values(services).map(_ => `${_}/package.json`))
 
       const pluginsLoader = this.makeLoader(pluginPackages, { key: "plugin" })
 
@@ -239,20 +239,24 @@ module.exports = Factor => {
         if (_.includes("package.json")) {
           const { name, factor: { priority = 100, target = "app" } = {} } = require(_)
 
+          const splitter = name.includes(key) ? key : this.namespace
+
           fields = {
             module: name,
             priority,
             target,
-            id: name.split(key)[1].replace(/\-/g, "")
+            id: this.makeId(name.split(splitter)[1])
           }
         } else {
           const basename = path.basename(_)
           const folderName = path.basename(path.dirname(_))
+          // Aliases needed so paths can be changed if needed
+          // Since webpack won't allow dynamic paths in require (variables in paths)
 
           fields = {
             module: Factor.$paths.replaceWithAliases(_),
             target: "app",
-            id: basename == "plugin.js" ? folderName : basename.replace(/\.js|plugin|\-/gi, "")
+            id: basename == "plugin.js" ? folderName : this.makeId(basename)
           }
         }
 
@@ -260,6 +264,10 @@ module.exports = Factor => {
       })
 
       return this.sortPriority(loader)
+    }
+
+    makeId(name) {
+      return name.replace(/\.js|plugin|\-|\//gi, "")
     }
   }()
 }
