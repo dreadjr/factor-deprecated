@@ -57,8 +57,7 @@ export default Factor => {
       const endpoints = []
       const lines = [
         "/* GENERATED FILE */",
-        "require(`./init.js`)",
-        "const endpoint = require(`@factor/admin-endpoints`)().endpoint",
+        "const Factor = require(`./init.js`)()",
         endpoints.join("\n")
       ]
 

@@ -2,7 +2,7 @@
   "name": "@factor/plugin-tools",
   "factor": {
     "priority": 30,
-    "target": "all"
+    "target": ["build", "app"]
   },
   "version": "1.0.0",
   "license": "MIT",

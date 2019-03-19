@@ -13,6 +13,7 @@ module.exports = Factor => {
       Factor.$paths.add({
         "plugins-loader-app": res(gen, "load-plugins-app.js"),
         "plugins-loader-build": res(gen, "load-plugins-build.js"),
+        "plugins-loader-endpoint": res(gen, "load-plugins-endpoint.js"),
         "themes-loader": res(gen, "load-themes.js")
       })
 
@@ -50,41 +51,53 @@ module.exports = Factor => {
 
     generateLoaders() {
       const s = Date.now()
-      const { pluginsLoader, themesLoader, activeTheme } = this.getExtensions()
+      const extensions = this.getExtensions()
 
       this.makeLoaderFile({
-        loader: pluginsLoader,
+        extensions,
         destination: Factor.$paths.get("plugins-loader-build"),
         target: "build"
       })
 
       this.makeLoaderFile({
-        loader: pluginsLoader,
+        extensions,
         destination: Factor.$paths.get("plugins-loader-app"),
         target: "app"
       })
 
       this.makeLoaderFile({
-        loader: themesLoader,
-        destination: Factor.$paths.get("themes-loader")
+        extensions,
+        destination: Factor.$paths.get("plugins-loader-endpoint"),
+        target: "endpoint"
+      })
+
+      this.makeLoaderFile({
+        extensions,
+        destination: Factor.$paths.get("themes-loader"),
+        target: "themes"
       })
 
       require("consola").success(
         `Made Loaders [${Date.now() - s}ms]`,
-        `- ${pluginsLoader.length} Plugins`,
-        `- ${themesLoader.length} Themes`
+        `- ${extensions.length} Extensions`
       )
 
-      if (Factor.FACTOR_CONFIG.theme == activeTheme) {
-        require("consola").success(`Active Theme: "${Factor.FACTOR_CONFIG.theme}"`)
-      }
+      // if (Factor.FACTOR_CONFIG.theme == activeTheme) {
+      //   require("consola").success(`Active Theme: "${Factor.FACTOR_CONFIG.theme}"`)
+      // }
     }
 
-    makeLoaderFile({ loader, destination, target }) {
+    makeLoaderFile({ extensions, destination, target }) {
       const fs = require("fs-extra")
 
-      if (target) {
-        loader = loader.filter(_ => _.target == target || _.target == "all")
+      const filtered = extensions.filter(
+        _ =>
+          _.target == target ||
+          ((Array.isArray(_.target) && _.target.includes(target)) || _.target == "all")
+      )
+
+      if (target == "endpoint") {
+        console.log("packages", extensions, filtered, destination, target)
       }
 
       const lines = [`/* GENERATED FILE */`]
@@ -92,18 +105,20 @@ module.exports = Factor => {
       lines.push("const files = {}")
 
       if (true || target == "build") {
-        loader.forEach(({ id, module }) => {
+        filtered.forEach(({ id, module }) => {
           lines.push(`files["${id}"] = require("${module}").default`)
         })
 
         lines.push(`module.exports = files`)
-      } else {
-        loader.forEach(({ id, module }) => {
-          lines.push(`files["${id}"] = () => import("${module}")`)
-        })
-
-        lines.push(`export default files`)
       }
+
+      // else {
+      //   loader.forEach(({ id, module }) => {
+      //     lines.push(`files["${id}"] = () => import("${module}")`)
+      //   })
+
+      //   lines.push(`export default files`)
+      // }
 
       fs.ensureDirSync(path.dirname(destination))
 
@@ -137,7 +152,7 @@ module.exports = Factor => {
         patterns.push(path.resolve(_, `./${this.namespace}*/package.json`))
       })
 
-      patterns.push(path.resolve(Factor.$paths.get("app"), `**/plugin.js`))
+      patterns.push(path.resolve(Factor.$paths.get("source"), `**/plugin.js`))
 
       return patterns
     }
@@ -145,41 +160,41 @@ module.exports = Factor => {
     getExtensions() {
       const glob = require("glob").sync
 
-      let activeTheme = false
-
       let packages = []
       this.getExtensionPatterns().forEach(pattern => {
         packages = packages.concat(glob(pattern))
       })
 
-      const themesPackages = packages.filter(_ => _.includes("theme"))
-      const themesLoader = this.makeLoader(themesPackages, { key: "theme" })
+      return this.makeLoader(packages)
 
-      activeTheme = Factor.FACTOR_CONFIG.theme
-        ? themesLoader.find((_, index) => {
-            themesLoader[index].active = true
-            return _.id == Factor.FACTOR_CONFIG.theme
-          })
-        : false
+      // const themesPackages = packages.filter(_ => _.includes("theme"))
+      // const themesLoader = this.makeLoader(themesPackages, { key: "theme" })
+
+      // activeTheme = Factor.FACTOR_CONFIG.theme
+      //   ? themesLoader.find((_, index) => {
+      //       themesLoader[index].active = true
+      //       return _.id == Factor.FACTOR_CONFIG.theme
+      //     })
+      //   : false
 
       // if (activeTheme) {
       //   const themePluginPattern = path.resolve(activeTheme.filepath, `**/@${this.namespace}/**/package.json`)
       //   packages = packages.concat(glob(themePluginPattern))
       // }
 
-      const { factor: { services = {} } = {} } = Factor.$config
+      // const { factor: { services = {} } = {} } = Factor.$config
 
-      let pluginPackages = []
-      pluginPackages = pluginPackages.concat(packages.filter(_ => _.includes("plugin")))
-      pluginPackages = pluginPackages.concat(Object.values(services).map(_ => `${_}/package.json`))
+      // let pluginPackages = []
+      // pluginPackages = pluginPackages.concat(packages.filter(_ => _.includes("plugin")))
+      // pluginPackages = pluginPackages.concat(Object.values(services).map(_ => `${_}/package.json`))
 
-      const pluginsLoader = this.makeLoader(pluginPackages, { key: "plugin" })
+      // const pluginsLoader = this.makeLoader(pluginPackages, { key: "plugin" })
 
-      return {
-        activeTheme,
-        pluginsLoader,
-        themesLoader
-      }
+      // return {
+      //   activeTheme,
+      //   pluginsLoader,
+      //   themesLoader
+      // }
     }
 
     sortPriority(arr) {
@@ -192,20 +207,18 @@ module.exports = Factor => {
       })
     }
 
-    makeLoader(packages, { key }) {
+    makeLoader(packages) {
       const loader = []
       packages.forEach(_ => {
         let fields = {}
         if (_.includes("package.json")) {
-          const { name, factor: { priority = 100, target = "app" } = {} } = require(_)
-
-          const splitter = name.includes(key) ? key : this.namespace
+          const { name, factor: { priority = 100, target = false } = {} } = require(_)
 
           fields = {
             module: name,
             priority,
             target,
-            id: this.makeId(name.split(splitter)[1])
+            id: this.makeId(name.split(/endpoint|plugin|theme|service|@factor/gi).pop())
           }
         } else {
           const basename = path.basename(_)

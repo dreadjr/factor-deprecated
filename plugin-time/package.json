@@ -4,7 +4,7 @@
   "main": "plugin.js",
   "license": "GPL-3.0",
   "factor": {
-    "target": "all"
+    "target": ["build", "app"]
   },
   "dependencies": {
     "dayjs": "^1.8.10"

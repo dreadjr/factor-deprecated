@@ -1,6 +1,5 @@
-const Factor = require("vue")
 const functions = require("firebase-functions")
-module.exports = () => {
+module.exports = Factor => {
   return new class {
     constructor() {
       Factor.FACTOR_CONFIG = { baseDir: __dirname }

@@ -4,7 +4,8 @@
   "main": "plugin.js",
   "license": "GPL-3.0",
   "factor": {
-    "priority": 20
+    "priority": 20,
+    "target": ["build", "app"]
   },
   "dependencies": {}
 }

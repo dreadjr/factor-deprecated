@@ -4,8 +4,7 @@
   "main": "plugin.js",
   "license": "GPL-3.0",
   "factor": {
-    "priority": 20,
-    "target": "build"
+    "priority": 20
   },
   "dependencies": {
     "@babel/core": "^7.3.4",

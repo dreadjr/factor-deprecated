@@ -1,11 +1,15 @@
+const Factor = require("vue")
+const admin = require(`firebase-admin`)
 module.exports = () => {
-  const admin = require(`firebase-admin`)
+  require("./extend-functions")(Factor)
 
   const {
     firebase: { databaseURL, serviceAccount }
-  } = require(`@factor/admin-config`)()
+  } = Factor.$config
 
   admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL })
 
   admin.firestore()
+
+  return Factor
 }

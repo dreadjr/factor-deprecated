@@ -24,8 +24,6 @@ module.exports = Factor => {
         config = Factor.$keys.readEncryptedSecrets({ build, password })
       }
 
-      console.log("private config", config)
-
       return config
     }
 

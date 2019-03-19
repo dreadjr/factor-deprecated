@@ -11,8 +11,6 @@ export default Factor => {
     }
 
     async setCustomClaims(uid) {
-      let result = false
-
       let result = await Factor.$endpoint.request({
         endpoint: "@factor/service-firebase-claims-endpoint",
         action: "customClaims",

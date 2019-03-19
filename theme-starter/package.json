@@ -16,5 +16,8 @@
   },
   "devDependencies": {
     "yargs": "^13.2.2"
+  },
+  "factor": {
+    "target": "themes"
   }
 }
