@@ -1,7 +1,9 @@
 module.exports = (Factor, FACTOR_CONFIG) => {
   return new class {
     constructor() {
-      Factor.$pkg = FACTOR_CONFIG
+      Factor.FACTOR_CONFIG = FACTOR_CONFIG
+
+      Factor.FACTOR_ENV = "build"
       this.setup()
     }
 
@@ -13,9 +15,9 @@ module.exports = (Factor, FACTOR_CONFIG) => {
       const _ = {}
       _.filters = require(`@factor/core-filters`)
       _.paths = require(`@factor/core-paths`)
+      _.keys = require(`@factor/core-keys`)
       _.config = require(`@factor/core-config`)
 
-      _.keys = require(`@factor/core-keys`)
       _.files = require(`@factor/core-files`)
 
       Factor.use({

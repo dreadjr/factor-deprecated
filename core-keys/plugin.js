@@ -1,3 +1,4 @@
+const consola = require("consola")
 module.exports = Factor => {
   return new class {
     constructor() {
@@ -41,8 +42,15 @@ module.exports = Factor => {
     }
 
     readEncryptedSecrets({ build = "dev", password }) {
-      const file = `keys-encrypted-${build}`
-      return require("crypto-json").decrypt(require(this.$paths.get(file)), password)
+      const file = Factor.$paths.get(`keys-encrypted-${build}`)
+
+      let encrypted = {}
+      try {
+        encrypted = require(file)
+      } catch (error) {
+        consola.warn(`Cannot find ${file}`)
+      }
+      return require("crypto-json").decrypt(encrypted, password)
     }
 
     makeEncryptedSecrets() {

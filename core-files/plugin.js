@@ -20,7 +20,7 @@ module.exports = Factor => {
         this.generateLoaders()
       }
 
-      require("@babel/register")(this.transpilerConfig("build"))
+      require("@factor/core-transpiler")().register({ target: "build" })
 
       this.addWatchers()
     }
@@ -75,8 +75,8 @@ module.exports = Factor => {
         `- ${themesLoader.length} Themes`
       )
 
-      if (Factor.$pkg.theme == activeTheme) {
-        require("consola").success(`Active Theme: "${Factor.$pkg.theme}"`)
+      if (Factor.FACTOR_CONFIG.theme == activeTheme) {
+        require("consola").success(`Active Theme: "${Factor.FACTOR_CONFIG.theme}"`)
       }
     }
 
@@ -108,46 +108,6 @@ module.exports = Factor => {
       fs.ensureDirSync(path.dirname(destination))
 
       fs.writeFileSync(destination, lines.join("\n"))
-    }
-
-    transpilerConfig(target) {
-      const modules = "cjs"
-
-      let plugins = [
-        "@babel/plugin-transform-regenerator",
-        "@babel/plugin-transform-runtime",
-        "@babel/plugin-syntax-dynamic-import",
-        "@babel/plugin-transform-modules-commonjs",
-        "@babel/plugin-proposal-object-rest-spread"
-      ]
-
-      if (target == "build") {
-        plugins = plugins.concat(["dynamic-import-node"])
-      }
-
-      return {
-        ignore: [
-          // **not** compiled if `true` is returned.
-          function(filepath) {
-            const modulePath = filepath.includes("node_modules")
-              ? filepath.split("node_modules").pop()
-              : filepath
-            return modulePath.includes("@factor") ? false : true
-          }
-        ],
-        plugins,
-        presets: [
-          [
-            "@babel/preset-env",
-            {
-              targets: {
-                browsers: ["> 1%", "last 2 versions"]
-              },
-              modules
-            }
-          ]
-        ]
-      }
     }
 
     readHtmlFile(filePath, { minify = true, name = "" } = {}) {
@@ -195,10 +155,10 @@ module.exports = Factor => {
       const themesPackages = packages.filter(_ => _.includes("theme"))
       const themesLoader = this.makeLoader(themesPackages, { key: "theme" })
 
-      activeTheme = Factor.$pkg.theme
+      activeTheme = Factor.FACTOR_CONFIG.theme
         ? themesLoader.find((_, index) => {
             themesLoader[index].active = true
-            return _.id == Factor.$pkg.theme
+            return _.id == Factor.FACTOR_CONFIG.theme
           })
         : false
 

@@ -15,13 +15,7 @@ export default Factor => {
 
       Factor.$isNode = isNode
 
-      Factor.$op = this.interop
-
       Factor.$tools = Factor.prototype.$tools = tools(Factor)
-    }
-
-    interop(obj) {
-      return obj && obj.default ? obj.default : obj
     }
   }()
 }

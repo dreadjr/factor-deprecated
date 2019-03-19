@@ -4,18 +4,18 @@ module.exports = Factor => {
   return new class {
     constructor() {
       this.assign()
-
+      require("module-alias/register")
       // Set aliases for node using NPM package
       require("module-alias").addAliases(this.getAliases())
     }
 
     assign() {
-      const { baseDir } = Factor.$pkg
+      const { baseDir } = Factor.FACTOR_CONFIG
       const _ = {}
       _.app = baseDir
       _.source = path.resolve(baseDir, "src")
       _.dist = path.resolve(baseDir, "dist")
-      _.generated = path.resolve(baseDir, ".factor")
+      _.generated = path.resolve(baseDir, "generated")
       _.config = path.resolve(_.source, "config")
       _.static = path.resolve(_.source, "static")
       _.template = path.resolve(_.source, "index.html")

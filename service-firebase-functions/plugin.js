@@ -1,7 +1,7 @@
-const { ensureDirSync, emptyDirSync, copySync, lstatSync } = require("fs-extra")
+const { ensureDirSync, emptyDirSync, copySync, writeFileSync } = require("fs-extra")
 const { spawn } = require("child_process")
 const glob = require("glob").sync
-
+const consola = require("consola")
 const { resolve, basename, dirname } = require("path")
 export default Factor => {
   return new class {
@@ -12,18 +12,70 @@ export default Factor => {
     }
 
     buildFunctionsFolder() {
+      this.copyAppDirectories()
+      this.makePackageJson()
+      this.copyFunctionsFiles()
+      this.makeIndexEntry()
+    }
+
+    copyAppDirectories() {
       const files = glob(resolve(this.applicationPath, "*"), {
-        ignore: ["**/node_modules", "**/package.json", "**/start.js"]
+        ignore: ["**/node_modules", "**/package.json", "**/start.js", "**/functions"]
       })
 
       ensureDirSync(this.buildDirectory)
       emptyDirSync(this.buildDirectory)
       files.forEach(f => {
-        const isDir = lstatSync(f).isDirectory()
+        copySync(f, resolve(this.buildDirectory, basename(f)))
+      })
+    }
 
-        const dest = basename(f)
-        console.log("dest", this.buildDirectory, dest)
-        copySync(f, resolve(this.buildDirectory, dest))
+    makePackageJson() {
+      const { pkg } = Factor.$config
+
+      const lines = {
+        name: "functions",
+        description: "** GENERATED FILE **",
+        version: pkg.version,
+        scripts: {
+          //transpile: `npx babel *.js --out-dir ./ ${babelCliPlugins} && npx babel src --out-dir src --ignore node_modules,dist,build ${babelCliPlugins}`
+        },
+        private: true,
+        engines: { node: "8" },
+        dependencies: {},
+        devDependencies: {}
+      }
+
+      writeFileSync(`${this.buildDirectory}/package.json`, JSON.stringify(lines, null, 4))
+    }
+
+    copyFunctionsFiles() {
+      copySync(resolve(__dirname, "files"), this.buildDirectory)
+    }
+
+    makeIndexEntry() {
+      const endpoints = []
+      const lines = [
+        "/* GENERATED FILE */",
+        "require(`./init.js`)",
+        "const endpoint = require(`@factor/admin-endpoints`)().endpoint",
+        endpoints.join("\n")
+      ]
+
+      writeFileSync(`${this.buildDirectory}/index.js`, lines.join(`\n`))
+    }
+
+    transpile() {
+      const transpiler = spawn("yarn", ["transpile"], {
+        cwd: `${process.cwd()}/functions`
+      })
+
+      transpiler.stdout.on("data", function(data) {
+        nodeUtils.flog(`TRANSPILE > ${data.toString().trim()}`)
+      })
+
+      transpiler.stderr.on("data", function(data) {
+        nodeUtils.flog(`TRANSPILE Error: ${data.toString()}`)
       })
     }
   }()

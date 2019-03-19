@@ -1,7 +1,8 @@
 export default (Factor, FACTOR_CONFIG, target) => {
   return new class {
     constructor() {
-      Factor.$pkg = FACTOR_CONFIG
+      Factor.FACTOR_CONFIG = FACTOR_CONFIG
+      Factor.FACTOR_ENV = "app"
       this.setup()
     }
 
