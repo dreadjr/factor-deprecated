@@ -1,0 +1,12 @@
+{
+  "name": "@factor/extend-endpoint",
+  "version": "1.0.0",
+  "main": "plugin.js",
+  "license": "GPL-3.0",
+  "dependencies": { 
+    "@factor/core-config": "^1.0.0", 
+    "@factor/core-keys": "^1.0.0",
+    "@factor/core-filters": "^1.0.0",
+    "@factor/core-paths": "^1.0.0"
+  }
+}

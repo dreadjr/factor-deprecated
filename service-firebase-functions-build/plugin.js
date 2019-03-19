@@ -15,7 +15,6 @@ export default Factor => {
       this.copyAppDirectories()
       this.makePackageJson()
       this.copyFunctionsFiles()
-      this.makeIndexEntry()
     }
 
     copyAppDirectories() {
@@ -53,16 +52,16 @@ export default Factor => {
       copySync(resolve(__dirname, "files"), this.buildDirectory)
     }
 
-    makeIndexEntry() {
-      const endpoints = []
-      const lines = [
-        "/* GENERATED FILE */",
-        "const Factor = require(`./init.js`)()",
-        endpoints.join("\n")
-      ]
+    // makeIndexEntry() {
+    //   const endpoints = []
+    //   const lines = [
+    //     "/* GENERATED FILE */",
+    //     "const entry = require(`@factor/service-firebase-functions-entry`)()",
+    //     "module.exports = entry.initialize()"
+    //   ]
 
-      writeFileSync(`${this.buildDirectory}/index.js`, lines.join(`\n`))
-    }
+    //   writeFileSync(`${this.buildDirectory}/index.js`, lines.join(`\n`))
+    // }
 
     transpile() {
       const transpiler = spawn("yarn", ["transpile"], {

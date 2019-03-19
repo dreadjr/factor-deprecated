@@ -96,10 +96,6 @@ module.exports = Factor => {
           ((Array.isArray(_.target) && _.target.includes(target)) || _.target == "all")
       )
 
-      if (target == "endpoint") {
-        console.log("packages", extensions, filtered, destination, target)
-      }
-
       const lines = [`/* GENERATED FILE */`]
 
       lines.push("const files = {}")
