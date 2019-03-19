@@ -1,0 +1,12 @@
+{
+  "name": "@factor/endpoint-firebase-claims",
+  "version": "1.0.0",
+  "main": "plugin.js",
+  "license": "GPL-3.0",
+  "factor": {
+    "target": "endpoint"
+  },
+  "dependencies": {
+    "@factor/plugin-user": "^1.0.0"
+  }
+}

@@ -34,6 +34,8 @@ export default Factor => {
       const user = this.getUser() || {}
       const { role = {} } = user
 
+      console.log("USER ROLE", user)
+
       return Object.keys(role).map(_ => {
         return { title: _, level: role[_] }
       })[0]
