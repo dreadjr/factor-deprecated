@@ -13,7 +13,7 @@ export default (Factor, FACTOR_CONFIG, target) => {
 
       const core = {}
       core.filters = require(`@factor/core-filters`)
-      core.config = require(`@factor/core-config`)
+      core.config = require(`@factor/core-config-app`)
 
       Factor.use({
         install(Factor) {

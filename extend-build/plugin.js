@@ -19,7 +19,7 @@ module.exports = (Factor, FACTOR_CONFIG) => {
 
       this.addCoreExtension("keys", require(`@factor/core-keys`))
       this.addCoreExtension("files", require(`@factor/core-files`))
-      this.addCoreExtension("config", require(`@factor/core-config`))
+      this.addCoreExtension("config", require(`@factor/core-config-admin`))
 
       const transpiler = require("@factor/core-transpiler")(Factor)
 

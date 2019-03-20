@@ -20,7 +20,7 @@ module.exports = (Factor, FACTOR_CONFIG) => {
       this.addCoreExtension("paths", require(`@factor/core-paths`))
       this.addCoreExtension("keys", require(`@factor/core-keys`))
       this.addCoreExtension("files", require(`@factor/core-files`))
-      this.addCoreExtension("config", require(`@factor/core-config`))
+      this.addCoreExtension("config", require(`@factor/core-config-admin`))
       this.addCoreExtension("endpoint", require(`@factor/core-endpoint`))
     }
 
