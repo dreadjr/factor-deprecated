@@ -12,7 +12,7 @@ module.exports = FACTOR_CONFIG => {
       this.endpointHandler = require("@factor/extend-endpoint")(Factor, {
         baseDir: FACTOR_CONFIG.baseDir,
         setup() {
-          const passwords = functions.config().factorPasswords
+          const { passwords } = functions.config().factor || {}
 
           if (passwords) {
             Factor.$filters.add("master-password", passwords)

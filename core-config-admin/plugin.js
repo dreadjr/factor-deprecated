@@ -1,13 +1,22 @@
 const merge = require("deepmerge")
 const env = process.env.NODE_ENV || "production"
 const isNode = require("detect-node")
+const { resolve } = require("path")
+const consola = require("consola")
 module.exports = Factor => {
   const handler = new class {
     constructor() {}
     getPasswords() {
       let passwords = Factor.$filters.apply("master-password")
       if (!passwords) {
-        passwords = this.getPasswordsFile()
+        passwords = {}
+        try {
+          passwords = require(resolve(Factor.$paths.get("passwords")))
+        } catch (error) {}
+      }
+
+      if (Object.keys(passwords).length == 0) {
+        consola.warn("Can't find private key passwords")
       }
 
       return passwords
@@ -28,11 +37,13 @@ module.exports = Factor => {
     }
 
     getPublicConfig() {
-      const out = {}
+      let out = {}
+      const path = Factor.$paths.get("keys-public")
+
       try {
-        out = require("@config/keys-public.json")
+        out = require(path)
       } catch (error) {
-        console.error(`Cant Find Public Config`)
+        consola.warn(`Public config file error @[${path}]`, error.message)
       }
       return out
     }
@@ -40,7 +51,7 @@ module.exports = Factor => {
     getPasswordsFile() {
       const out = {}
       try {
-        out = require("@config/passwords.json")
+        out = require(resolve(Factor.$paths.get("config"), "passwords.json"))
       } catch (error) {}
       return out
     }
@@ -48,7 +59,7 @@ module.exports = Factor => {
     fullConfig() {
       let publicConfig = this.getPublicConfig()
 
-      const privateConfig = Factor.FACTOR_ENV != "app" && isNode ? this.serverPrivateConfig() : {}
+      const privateConfig = this.serverPrivateConfig()
 
       const configObjects = [
         Factor.FACTOR_CONFIG,

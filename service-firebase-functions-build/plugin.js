@@ -36,6 +36,8 @@ export default Factor => {
       this.copyAppDirectories()
       this.makePackageJson()
       this.copyFunctionsFiles()
+      this.runtimeFile()
+      this.transpile()
     }
 
     copyAppDirectories() {
@@ -75,6 +77,24 @@ export default Factor => {
 
     copyFunctionsFiles() {
       copySync(resolve(__dirname, "files"), this.buildDirectory)
+    }
+
+    runtimeFile() {
+      const runner = spawn("npx", ["firebase", "functions:config:get > .runtimeconfig.json"], {
+        cwd: `${process.cwd()}/${this.folderName}`
+      })
+
+      runner.stdout.on("data", function(data) {
+        consola.log(`Runtime > ${data.toString().trim()}`)
+      })
+
+      runner.stderr.on("data", function(data) {
+        consola.log(`Error: ${data.toString()}`)
+      })
+
+      runner.on("close", code => {
+        consola.log(`exited with code ${code}`)
+      })
     }
 
     transpile() {
