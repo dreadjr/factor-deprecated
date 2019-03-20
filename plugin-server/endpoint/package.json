@@ -1,0 +1,8 @@
+{
+  "name": "@factor/endpoint-ssr",
+  "factor": {
+    "target": "endpoint"
+  },
+  "version": "1.0.0",
+  "license": "GPL-3.0"
+}

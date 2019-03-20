@@ -2,21 +2,25 @@ const Factor = require("vue")
 const admin = require(`firebase-admin`)
 const functions = require("firebase-functions")
 const { resolve } = require("path")
-module.exports = () => {
+module.exports = FACTOR_CONFIG => {
   return new class {
     constructor() {
       this.initialize()
     }
 
     initialize() {
-      require("@factor/extend-endpoint")(Factor, {
-        baseDir: __dirname,
+      this.endpointHandler = require("@factor/extend-endpoint")(Factor, {
+        baseDir: FACTOR_CONFIG.baseDir,
         setup() {
           const passwords = functions.config().factorPasswords
 
           if (passwords) {
             Factor.$filters.add("master-password", passwords)
           }
+
+          // Add the Firebase Functions call that handles the https endpoint requests
+          // This is used by the 'endpoint' class
+          Factor.$filters.add("endpoint-service", functions.https.onRequest)
         }
       })
 
@@ -32,7 +36,8 @@ module.exports = () => {
     }
 
     endpoints() {
-      return require(resolve(Factor.$paths.get("generated"), "load-plugins-endpoint"))
+      // Export endpoints in the form obj['endpointname'] = endpoint(req, res)
+      return this.endpointHandler.endpoints()
     }
   }()
 }

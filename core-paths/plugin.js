@@ -3,29 +3,43 @@ const consola = require("consola")
 module.exports = Factor => {
   return new class {
     constructor() {
-      this.assign()
-      require("module-alias/register")
+      this.assignFolderNames()
+      this.assignPaths()
+
       // Set aliases for node using NPM package
-      require("module-alias").addAliases(this.getAliases())
     }
 
-    assign() {
+    assignFolderNames() {
+      const _ = {}
+      _.dist = "dist"
+      _.source = "src"
+      _.generated = "generated"
+
+      this.folderNames = Factor.$filters.apply("folder-names", _)
+    }
+
+    assignPaths() {
       const { baseDir } = Factor.FACTOR_CONFIG
+
       const _ = {}
       _.app = baseDir
-      _.source = path.resolve(baseDir, "src")
-      _.dist = path.resolve(baseDir, "dist")
-      _.generated = path.resolve(baseDir, "generated")
+      _.source = path.resolve(baseDir, this.folder("source"))
+      _.dist = path.resolve(baseDir, this.folder("dist"))
+      _.generated = path.resolve(baseDir, this.folder("generated"))
       _.config = path.resolve(_.source, "config")
       _.static = path.resolve(_.source, "static")
       _.template = path.resolve(_.source, "index.html")
       _.favicon = path.resolve(_.static, "favicon.png")
 
-      this.paths = Factor.$filters.applyFilters("paths", _)
+      this.paths = Factor.$filters.apply("paths", _)
     }
 
     get(p) {
       return this.paths[p] || null
+    }
+
+    folder(f) {
+      return this.folderNames[f] || null
     }
 
     add(p, value) {
@@ -41,8 +55,7 @@ module.exports = Factor => {
         "@": this.get("source"),
         "~": this.get("app"),
         "@generated": this.get("generated"),
-        "@config": this.get("config"),
-        "@entry": this.get("entry")
+        "@config": this.get("config")
       }
     }
 

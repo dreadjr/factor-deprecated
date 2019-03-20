@@ -4,7 +4,6 @@ module.exports = async FACTOR_CONFIG => {
   // Add aliases for modules
   // This allows us to use the same format for node/webpack
   // (otherwise webpack doesn't allow variables in imports)
-  require("module-alias/register")
 
   require("@factor/extend-build")(Factor, FACTOR_CONFIG)
 

@@ -1,19 +1,40 @@
 export default Factor => {
   return new class {
     constructor() {
-      const firebaseApp = require("@factor/service-firebase-app").default
-      require("firebase/firestore")
+      if (Factor.FACTOR_ENV == "build") {
+        this.addConfig()
+      } else {
+        const firebaseApp = require("@factor/service-firebase-app").default
+        require("firebase/firestore")
 
-      this.client = firebaseApp(Factor).client
+        this.client = firebaseApp(Factor).client
 
-      Factor.$filters.addService({
-        name: "db-service-read",
-        service: _ => this.read(_)
-      })
+        Factor.$filters.addService({
+          name: "db-service-read",
+          service: _ => this.read(_)
+        })
 
-      Factor.$filters.addService({
-        name: "db-service-update",
-        service: _ => this.update(_)
+        Factor.$filters.addService({
+          name: "db-service-update",
+          service: _ => this.update(_)
+        })
+      }
+    }
+
+    addConfig() {
+      const { resolve } = require("path")
+      const { copySync } = require("fs-extra")
+      const fldr = Factor.$paths.folder("generated")
+
+      copySync(resolve(__dirname, "files"), Factor.$paths.get("generated"))
+
+      Factor.$filters.add("firebase-config", _ => {
+        _.firestore = {
+          rules: `${fldr}/firebase-firestore.rules`,
+          indexes: `${fldr}/firebase-firestore-indexes.json`
+        }
+
+        return _
       })
     }
 

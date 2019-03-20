@@ -21,8 +21,6 @@ module.exports = Factor => {
         this.generateLoaders()
       }
 
-      require("@factor/core-transpiler")().register({ target: "build" })
-
       this.addWatchers()
     }
 

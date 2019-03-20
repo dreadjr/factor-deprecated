@@ -3,12 +3,11 @@ const env = process.env.NODE_ENV || "production"
 const isNode = require("detect-node")
 module.exports = Factor => {
   const handler = new class {
+    constructor() {}
     getPasswords() {
       let passwords = Factor.$filters.apply("master-password")
       if (!passwords) {
-        try {
-          passwords = require("@config/passwords.json")
-        } catch (error) {}
+        passwords = this.getPasswordsFile()
       }
 
       return passwords
@@ -16,28 +15,42 @@ module.exports = Factor => {
 
     serverPrivateConfig() {
       const passwords = this.getPasswords()
+
       const build = env == "production" ? "prod" : "dev"
-      const password = passwords[build]
+
       let config = {}
 
-      if (password) {
-        config = Factor.$keys.readEncryptedSecrets({ build, password })
+      if (passwords && passwords[build]) {
+        config = Factor.$keys.readEncryptedSecrets({ build, password: passwords[build] })
       }
 
       return config
     }
 
-    fullConfig() {
-      let publicConfig = {}
+    getPublicConfig() {
+      const out = {}
       try {
-        publicConfig = require("@config/keys-public.json")
+        out = require("@config/keys-public.json")
       } catch (error) {
-        consola.error(`Can't find public config file @[${this.keysPublic}]`)
+        console.error(`Cant Find Public Config`)
       }
+      return out
+    }
+
+    getPasswordsFile() {
+      const out = {}
+      try {
+        out = require("@config/passwords.json")
+      } catch (error) {}
+      return out
+    }
+
+    fullConfig() {
+      let publicConfig = this.getPublicConfig()
 
       const privateConfig = Factor.FACTOR_ENV != "app" && isNode ? this.serverPrivateConfig() : {}
 
-      return merge.all([
+      const configObjects = [
         Factor.FACTOR_CONFIG,
         publicConfig[env],
         publicConfig.all,
@@ -46,7 +59,9 @@ module.exports = Factor => {
         {
           env
         }
-      ])
+      ].filter(_ => _)
+
+      return merge.all(configObjects)
     }
   }()
 

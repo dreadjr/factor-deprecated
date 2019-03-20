@@ -11,23 +11,42 @@ module.exports = (Factor, FACTOR_CONFIG) => {
       Factor.config.devtools = false
       Factor.config.silent = true
 
-      const _ = {}
-      _.filters = require(`@factor/core-filters`)
-      _.paths = require(`@factor/core-paths`)
-      _.paths = require(`@factor/core-keys`)
-      _.config = require(`@factor/core-config`)
+      this.addCoreExtension("filters", require(`@factor/core-filters`))
 
+      if (typeof FACTOR_CONFIG.setup == "function") {
+        FACTOR_CONFIG.setup()
+      }
+
+      this.addCoreExtension("paths", require(`@factor/core-paths`))
+      this.addCoreExtension("keys", require(`@factor/core-keys`))
+      this.addCoreExtension("files", require(`@factor/core-files`))
+      this.addCoreExtension("config", require(`@factor/core-config`))
+      this.addCoreExtension("endpoint", require(`@factor/core-endpoint`))
+    }
+
+    addCoreExtension(id, extension) {
       Factor.use({
         install(Factor) {
-          for (var plug in _) {
-            Factor[`$${plug}`] = Factor.prototype[`$${plug}`] = _[plug](Factor)
-
-            if (plug == "filters" && typeof FACTOR_CONFIG.setup == "function") {
-              FACTOR_CONFIG.setup()
-            }
-          }
+          Factor[`$${id}`] = Factor.prototype[`$${id}`] = extension(Factor)
         }
       })
+    }
+
+    endpoints() {
+      const endpoints = {}
+
+      // Get extensions that are endpoints
+      const endpointPlugins = require(resolve(
+        Factor.$paths.get("generated"),
+        "load-plugins-endpoint"
+      ))
+
+      // Add the endpoints to be processed by endpoint handler
+      for (var id in endpointPlugins) {
+        endpoints[id] = Factor.$endpoint.instance(endpointPlugins[id])
+      }
+
+      return endpoints
     }
   }()
 }

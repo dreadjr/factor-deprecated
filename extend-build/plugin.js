@@ -12,27 +12,46 @@ module.exports = (Factor, FACTOR_CONFIG) => {
       Factor.config.devtools = true
       Factor.config.silent = false
 
-      const _ = {}
-      _.filters = require(`@factor/core-filters`)
-      _.paths = require(`@factor/core-paths`)
-      _.keys = require(`@factor/core-keys`)
-      _.config = require(`@factor/core-config`)
+      this.addCoreExtension("filters", require(`@factor/core-filters`))
+      this.addCoreExtension("paths", require(`@factor/core-paths`))
 
-      _.files = require(`@factor/core-files`)
+      const aliases = Factor.$paths.getAliases()
 
-      Factor.use({
-        install(Factor) {
-          for (var _p in _) {
-            const h = `$${_p}`
-            Factor[h] = Factor.prototype[h] = _[_p](Factor)
-          }
-        }
-      })
+      this.addCoreExtension("keys", require(`@factor/core-keys`))
+      this.addCoreExtension("files", require(`@factor/core-files`))
+      this.addCoreExtension("config", require(`@factor/core-config`))
+
+      const transpiler = require("@factor/core-transpiler")(Factor)
+
+      transpiler.register({ target: "build" })
 
       require(`@factor/core-app`)(Factor, { target: "build" })
 
       const plugins = require(Factor.$paths.get("plugins-loader-build"))
       this.injectPlugins(plugins)
+      this.initializeBuild()
+      transpiler.copyTranspilerConfig()
+    }
+
+    addCoreExtension(id, extension) {
+      Factor.use({
+        install(Factor) {
+          Factor[`$${id}`] = Factor.prototype[`$${id}`] = extension(Factor)
+        }
+      })
+    }
+
+    initializeBuild() {
+      this._runCallbacks(Factor.$filters.apply("initialize-build", {}))
+    }
+
+    _runCallbacks(callbacks) {
+      for (var key in callbacks) {
+        const cb = callbacks[key]
+        if (cb && typeof cb == "function") {
+          cb()
+        }
+      }
     }
 
     injectPlugins(plugins) {

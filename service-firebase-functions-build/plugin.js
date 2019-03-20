@@ -6,9 +6,30 @@ const { resolve, basename, dirname } = require("path")
 export default Factor => {
   return new class {
     constructor() {
+      this.folderName = "serverless"
       this.applicationPath = Factor.$paths.get("app")
-      this.buildDirectory = resolve(this.applicationPath, "functions")
+      this.buildDirectory = resolve(this.applicationPath, this.folderName)
       this.buildFunctionsFolder()
+      this.addConfig()
+    }
+
+    addConfig() {
+      Factor.$filters.add("firebase-config", _ => {
+        _.hosting = _.hosting || {}
+
+        _.hosting.rewrites = [
+          {
+            source: "**",
+            function: "ssr"
+          }
+        ]
+
+        _.functions = {
+          source: this.folderName
+        }
+
+        return _
+      })
     }
 
     buildFunctionsFolder() {
@@ -19,7 +40,7 @@ export default Factor => {
 
     copyAppDirectories() {
       const files = glob(resolve(this.applicationPath, "*"), {
-        ignore: ["**/node_modules", "**/package.json", "**/start.js", "**/functions"]
+        ignore: ["**/node_modules", "**/package.json", "**/start.js", `**/${this.folderName}`]
       })
 
       ensureDirSync(this.buildDirectory)
@@ -30,18 +51,22 @@ export default Factor => {
     }
 
     makePackageJson() {
-      const { pkg } = Factor.$config
+      const dependencies = {}
+      dependencies["@factor/service-firebase-functions-entry"] = "^1.0.0"
 
+      const { pkg } = Factor.$config
+      const babelCliPlugins = "--plugins=babel-plugin-dynamic-import-node"
       const lines = {
-        name: "functions",
+        name: "serverless",
         description: "** GENERATED FILE **",
         version: pkg.version,
         scripts: {
-          //transpile: `npx babel *.js --out-dir ./ ${babelCliPlugins} && npx babel src --out-dir src --ignore node_modules,dist,build ${babelCliPlugins}`
+          install: "npm install",
+          transpile: `npx babel *.js --out-dir ./ ${babelCliPlugins} && npx babel src --out-dir src --ignore node_modules,dist,build ${babelCliPlugins}`
         },
         private: true,
         engines: { node: "8" },
-        dependencies: {},
+        dependencies,
         devDependencies: {}
       }
 
@@ -52,28 +77,21 @@ export default Factor => {
       copySync(resolve(__dirname, "files"), this.buildDirectory)
     }
 
-    // makeIndexEntry() {
-    //   const endpoints = []
-    //   const lines = [
-    //     "/* GENERATED FILE */",
-    //     "const entry = require(`@factor/service-firebase-functions-entry`)()",
-    //     "module.exports = entry.initialize()"
-    //   ]
-
-    //   writeFileSync(`${this.buildDirectory}/index.js`, lines.join(`\n`))
-    // }
-
     transpile() {
-      const transpiler = spawn("yarn", ["transpile"], {
-        cwd: `${process.cwd()}/functions`
+      const transpiler = spawn("npm", ["run", "transpile"], {
+        cwd: `${process.cwd()}/${this.folderName}`
       })
 
       transpiler.stdout.on("data", function(data) {
-        nodeUtils.flog(`TRANSPILE > ${data.toString().trim()}`)
+        consola.log(`ES6 Transpile Serverless > ${data.toString().trim()}`)
       })
 
       transpiler.stderr.on("data", function(data) {
-        nodeUtils.flog(`TRANSPILE Error: ${data.toString()}`)
+        consola.log(`TRANSPILE Error: ${data.toString()}`)
+      })
+
+      transpiler.on("close", code => {
+        consola.log(`Transpiler exited with code ${code}`)
       })
     }
   }()

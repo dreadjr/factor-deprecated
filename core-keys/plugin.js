@@ -56,7 +56,8 @@ module.exports = Factor => {
     makeEncryptedSecrets() {
       const fs = require("fs-extra")
       const consola = require("consola")
-      let passwords = Factor.$filters.get("master-password")
+
+      let passwords = Factor.$filters.apply("master-password")
 
       let passwordsFile = Factor.$paths.get("passwords")
       if (!passwords) {
