@@ -27,16 +27,20 @@ module.exports = FACTOR_CONFIG => {
 
       this.endpointHandler = require("@factor/extend-endpoint")(Factor, FACTOR_CONFIG)
 
-      const {
-        firebase: { databaseURL, serviceAccount }
-      } = Factor.$config
+      try {
+        const {
+          firebase: { databaseURL, serviceAccount }
+        } = Factor.$config
 
-      if (serviceAccount) {
-        admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL })
+        if (serviceAccount) {
+          admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL })
 
-        admin.firestore()
-      } else {
-        consola.error("Missing service account config info")
+          admin.firestore()
+        } else {
+          consola.error("Missing service account config info")
+        }
+      } catch (error) {
+        throw new Error(error)
       }
 
       return Factor

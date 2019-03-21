@@ -18,12 +18,15 @@ module.exports = Factor => {
         return password
       }
 
-      let passwordfile = require(Factor.$paths.get("passwords"))
+      let passwordfile = null
+      try {
+        passwordfile = require(Factor.$paths.get("passwords"))
+      } catch (error) {}
 
       password = passwordfile && passwordfile[this.env] ? passwordfile[this.env] : false
 
       if (!password) {
-        consola.warn("Can't find a private config key password")
+        consola.warn("Can't find a private key password.")
       }
 
       return password

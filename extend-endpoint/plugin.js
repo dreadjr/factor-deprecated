@@ -1,3 +1,5 @@
+const { resolve } = require("path")
+
 module.exports = (Factor, FACTOR_CONFIG) => {
   return new class {
     constructor() {
