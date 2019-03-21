@@ -1,5 +1,5 @@
 const { ensureDirSync, emptyDirSync, copySync, writeFileSync } = require("fs-extra")
-const { spawn } = require("child_process")
+const { spawnSync, spawn } = require("child_process")
 const glob = require("glob").sync
 const consola = require("consola")
 const { resolve, basename, dirname } = require("path")
@@ -54,22 +54,23 @@ export default Factor => {
 
     makePackageJson() {
       const dependencies = {}
-      dependencies["@factor/service-firebase-functions-entry"] = "^1.0.0"
+      // dependencies["@factor/service-firebase-functions-entry"] = "^1.0.0"
 
       const { pkg } = Factor.$config
       const babelCliPlugins = "--plugins=babel-plugin-dynamic-import-node"
       const lines = {
-        name: "serverless",
+        name: "@factor/serverless-directory",
         description: "** GENERATED FILE **",
         version: pkg.version,
         scripts: {
-          install: "npm install",
-          transpile: `npx babel *.js --out-dir ./ ${babelCliPlugins} && npx babel src --out-dir src --ignore node_modules,dist,build ${babelCliPlugins}`
+          transpile: `npx babel src --out-dir src --ignore node_modules,dist,build ${babelCliPlugins}`,
+          runtime: "npx firebase functions:config:get > .runtimeconfig.json"
         },
-        private: true,
         engines: { node: "8" },
         dependencies,
-        devDependencies: {}
+        devDependencies: {
+          "@babel/cli": "^7.0.0"
+        }
       }
 
       writeFileSync(`${this.buildDirectory}/package.json`, JSON.stringify(lines, null, 4))
@@ -79,40 +80,32 @@ export default Factor => {
       copySync(resolve(__dirname, "files"), this.buildDirectory)
     }
 
-    runtimeFile() {
-      const runner = spawn("npx", ["firebase", "functions:config:get > .runtimeconfig.json"], {
-        cwd: `${process.cwd()}/${this.folderName}`
-      })
-
+    showOutput(name, runner) {
       runner.stdout.on("data", function(data) {
-        consola.log(`Runtime > ${data.toString().trim()}`)
+        consola.info(`${name} > ${data.toString().trim()}`)
       })
-
       runner.stderr.on("data", function(data) {
-        consola.log(`Error: ${data.toString()}`)
+        consola.warn(`${name}: ${data.toString()}`)
       })
-
       runner.on("close", code => {
-        consola.log(`exited with code ${code}`)
+        consola.info(`${name} exited with code ${code}`)
       })
     }
 
-    transpile() {
-      const transpiler = spawn("npm", ["run", "transpile"], {
+    runtimeFile() {
+      const runner = spawn("yarn", ["install", "--ignore-engines"], {
         cwd: `${process.cwd()}/${this.folderName}`
       })
 
-      transpiler.stdout.on("data", function(data) {
-        consola.log(`ES6 Transpile Serverless > ${data.toString().trim()}`)
+      this.showOutput("Install", runner)
+    }
+
+    transpile() {
+      const transpiler = spawn("yarn", ["transpile"], {
+        cwd: `${process.cwd()}/${this.folderName}`
       })
 
-      transpiler.stderr.on("data", function(data) {
-        consola.log(`TRANSPILE Error: ${data.toString()}`)
-      })
-
-      transpiler.on("close", code => {
-        consola.log(`Transpiler exited with code ${code}`)
-      })
+      this.showOutput("Transpile", transpiler)
     }
   }()
 }

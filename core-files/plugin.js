@@ -17,7 +17,7 @@ module.exports = Factor => {
         "themes-loader": res(gen, "load-themes.js")
       })
 
-      if (this.build == "development") {
+      if (Factor.FACTOR_ENV == "build" && this.build == "development") {
         this.generateLoaders()
       }
 

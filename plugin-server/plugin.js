@@ -11,7 +11,7 @@ const { createBundleRenderer } = require("vue-server-renderer")
 const env = process.env.NODE_ENV || "production"
 const isProd = env === "production"
 
-require("module-alias/register")
+// require("module-alias/register")
 
 export default Factor => {
   return new class {

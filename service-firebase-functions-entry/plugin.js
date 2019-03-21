@@ -1,6 +1,7 @@
 const Factor = require("vue")
 const admin = require(`firebase-admin`)
 const functions = require("firebase-functions")
+const consola = require("consola")
 const { resolve } = require("path")
 module.exports = FACTOR_CONFIG => {
   return new class {
@@ -9,7 +10,7 @@ module.exports = FACTOR_CONFIG => {
     }
 
     initialize() {
-      this.endpointHandler = require("@factor/extend-endpoint")(Factor, {
+      FACTOR_CONFIG = {
         baseDir: FACTOR_CONFIG.baseDir,
         setup() {
           const { passwords } = functions.config().factor || {}
@@ -22,15 +23,21 @@ module.exports = FACTOR_CONFIG => {
           // This is used by the 'endpoint' class
           Factor.$filters.add("endpoint-service", functions.https.onRequest)
         }
-      })
+      }
+
+      this.endpointHandler = require("@factor/extend-endpoint")(Factor, FACTOR_CONFIG)
 
       const {
         firebase: { databaseURL, serviceAccount }
       } = Factor.$config
 
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL })
+      if (serviceAccount) {
+        admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL })
 
-      admin.firestore()
+        admin.firestore()
+      } else {
+        consola.error("Missing service account config info")
+      }
 
       return Factor
     }

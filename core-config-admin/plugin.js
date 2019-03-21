@@ -1,74 +1,59 @@
 const merge = require("deepmerge")
-const env = process.env.NODE_ENV || "production"
+
 const isNode = require("detect-node")
 const { resolve } = require("path")
 const consola = require("consola")
 module.exports = Factor => {
   const handler = new class {
-    constructor() {}
+    constructor() {
+      this.env =
+        process.env.NODE_ENV == "development" || Factor.FACTOR_CONFIG.staging
+          ? "development"
+          : "production"
+    }
     getPasswords() {
-      let passwords = Factor.$filters.apply("master-password")
-      if (!passwords) {
-        passwords = {}
-        try {
-          passwords = require(resolve(Factor.$paths.get("passwords")))
-        } catch (error) {}
+      let password = Factor.$filters.apply(`master-password-${this.env}`)
+
+      if (password) {
+        return password
       }
 
-      if (Object.keys(passwords).length == 0) {
-        consola.warn("Can't find private key passwords")
+      let passwordfile = require(Factor.$paths.get("passwords"))
+
+      password = passwordfile && passwordfile[this.env] ? passwordfile[this.env] : false
+
+      if (!password) {
+        consola.warn("Can't find a private config key password")
       }
 
-      return passwords
+      return password
     }
 
     serverPrivateConfig() {
-      const passwords = this.getPasswords()
-
-      const build = env == "production" ? "prod" : "dev"
+      const password = this.getPasswords()
 
       let config = {}
 
-      if (passwords && passwords[build]) {
-        config = Factor.$keys.readEncryptedSecrets({ build, password: passwords[build] })
+      if (password) {
+        config = Factor.$keys.readEncryptedSecrets({ build, password })
       }
 
       return config
     }
 
-    getPublicConfig() {
-      let out = {}
-      const path = Factor.$paths.get("keys-public")
-
-      try {
-        out = require(path)
-      } catch (error) {
-        consola.warn(`Public config file error @[${path}]`, error.message)
-      }
-      return out
-    }
-
-    getPasswordsFile() {
-      const out = {}
-      try {
-        out = require(resolve(Factor.$paths.get("config"), "passwords.json"))
-      } catch (error) {}
-      return out
-    }
-
     fullConfig() {
-      let publicConfig = this.getPublicConfig()
+      let publicConfig = require(Factor.$paths.get("keys-public"))
 
       const privateConfig = this.serverPrivateConfig()
 
       const configObjects = [
         Factor.FACTOR_CONFIG,
-        publicConfig[env],
+        publicConfig[this.env],
         publicConfig.all,
         privateConfig,
         isNode,
         {
-          env
+          env: this.env
         }
       ].filter(_ => _)
 
