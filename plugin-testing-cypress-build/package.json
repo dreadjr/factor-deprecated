@@ -1,7 +1,7 @@
 {
   "name": "@factor/plugin-testing-cypress-build",
   "main": "plugin.js",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "license": "GPL3.0",
   "factor": {
     "target": "build"

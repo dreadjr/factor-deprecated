@@ -1,6 +1,6 @@
 {
-  "name": "@factor/service-firebase-cli-build",
-  "version": "1.0.0",
+  "name": "@factor/service-firebase-app-build",
+  "version": "0.0.1",
   "main": "plugin.js",
   "license": "GPL-3.0",
   "factor": {

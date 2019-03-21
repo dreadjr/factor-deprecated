@@ -54,8 +54,8 @@ export default Factor => {
 
     makePackageJson() {
       const dependencies = {}
-      dependencies["@factor/service-firebase-functions-entry"] = "^1.0.0"
-      dependencies["@factor/admin-endpoint-extend"] = "^1.0.0"
+      dependencies["@factor/service-firebase-functions-entry"] = "^0.0.1"
+      dependencies["@factor/admin-endpoint-extend"] = "^0.0.1"
 
       const { pkg } = Factor.$config
       const babelCliPlugins = "--plugins=babel-plugin-dynamic-import-node"
