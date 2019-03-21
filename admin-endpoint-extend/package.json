@@ -1,0 +1,15 @@
+{
+  "name": "@factor/admin-endpoint-extend",
+  "version": "1.0.0",
+  "main": "plugin.js",
+  "license": "GPL-3.0",
+  "factor": {
+    "target": "serverless"
+  },
+  "dependencies": {
+    "@factor/admin-config": "^1.0.0",
+    "@factor/build-keys": "^1.0.0",
+    "@factor/filters": "^1.0.0",
+    "@factor/build-paths": "^1.0.0"
+  }
+}

@@ -1,8 +1,6 @@
 module.exports = FactorAdmin => {
   return new class {
-    constructor() {
-      this.tools = require("./admin-tools")
-    }
+    constructor() {}
 
     async customClaims() {
       // Privs are what have been set up
@@ -15,7 +13,9 @@ module.exports = FactorAdmin => {
 
       const privs = await this.tools.getExistingClaims(uid)
 
-      const roles = require(`@factor/plugin-user`).default(Factor).config().roles
+      const roles = require(`@factor/plugin-user`)
+        .default(Factor)
+        .config().roles
 
       let newClaims = { accessLevel: 1 }
 

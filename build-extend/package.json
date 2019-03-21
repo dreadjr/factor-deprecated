@@ -1,0 +1,14 @@
+{
+  "name": "@factor/build-extend",
+  "version": "1.0.0",
+  "main": "plugin.js",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@factor/app": "^1.0.0",
+    "@factor/admin-config": "^1.0.0",
+    "@factor/build-files": "^1.0.0",
+    "@factor/build-keys": "^1.0.0",
+    "@factor/filters": "^1.0.0",
+    "@factor/build-paths": "^1.0.0"
+  }
+}

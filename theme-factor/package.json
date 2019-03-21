@@ -11,6 +11,6 @@
     "start": "NODE_ENV=production node start --build --serve --no-cache"
   },
   "dependencies": {
-    "@factor/core": "^1.0.0"
+    "@factor/build": "^1.0.0"
   }
 }

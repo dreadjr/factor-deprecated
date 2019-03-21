@@ -1,22 +1,18 @@
 {
-  "name": "@factor/app-starter",
+  "name": "@factor/theme-starter",
   "version": "1.0.0",
   "description": "A starter app for Factor CMS.",
   "author": "Fiction.com",
   "license": "GPL-3.0",
   "theme": "cicero",
-  "port": 7777,
   "scripts": {
     "dev": "NODE_ENV=development node config/start",
     "start": "NODE_ENV=production node config/start --build --serve --no-cache"
   },
   "dependencies": {
-    "@factor/core": "^1.0.0",
-    "@factor/theme-cicero": "^1.0.0"
+    "@factor/build": "^1.0.0"
   },
-  "devDependencies": {
-    "yargs": "^13.2.2"
-  },
+
   "factor": {
     "target": "themes"
   }

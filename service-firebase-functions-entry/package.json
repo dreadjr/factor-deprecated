@@ -7,7 +7,7 @@
     "target": "serverless"
   },
   "dependencies": {
-    "@factor/extend-endpoint": "^1.0.0",
+    "@factor/admin-endpoint-extend": "^1.0.0",
     "firebase-admin": "^7.1.0",
     "firebase-functions": "^2.2.0",
     "vue": "^2.6.9"

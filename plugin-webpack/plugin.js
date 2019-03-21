@@ -241,7 +241,7 @@ module.exports.default = Factor => {
             {
               test: /\.js$/,
               loader: "babel-loader",
-              options: require("@factor/core-transpiler")(Factor).config({ target: "app" })
+              options: require("@factor/build-transpiler")(Factor).config({ target: "app" })
             },
             {
               test: /\.(png|jpg|gif|svg)$/,
