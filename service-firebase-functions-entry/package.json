@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "plugin.js",
   "license": "GPL-3.0",
-  "factor": {},
+  "factor": {
+    "target": "serverless"
+  },
   "dependencies": {
     "@factor/extend-endpoint": "^1.0.0",
     "firebase-admin": "^7.1.0",

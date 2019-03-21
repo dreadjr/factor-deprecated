@@ -12,12 +12,14 @@ module.exports = Factor => {
     }
 
     instance(plugin) {
-      return this.endpointService((req, res) => {
+      const requester = (req, res) => {
         return cors(req, res, async () => {
           await this.onRequest(plugin, req, res)
           return
         })
-      })
+      }
+
+      return this.endpointService(requester)
     }
 
     async onRequest(plugin, req, res) {

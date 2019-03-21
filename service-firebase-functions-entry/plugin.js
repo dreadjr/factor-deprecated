@@ -21,7 +21,7 @@ module.exports = FACTOR_CONFIG => {
 
           // Add the Firebase Functions call that handles the https endpoint requests
           // This is used by the 'endpoint' class
-          Factor.$filters.add("endpoint-service", functions.https.onRequest)
+          Factor.$filters.add("endpoint-service", () => functions.https.onRequest)
         }
       }
 
